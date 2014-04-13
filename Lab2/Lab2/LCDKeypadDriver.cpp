@@ -28,10 +28,18 @@ LCDKeypadDriver::LCDKeypadDriver() {
 // TOREV
 void LCDKeypadDriver::adc_initialize(){
 	// AREF = AVcc
+	//1 shift 6 places (01000000) to define the reference for the ADC. In this case 5V
+	//ADLAR bit is set 0 in ADMUX register because we want the high part of the conversion
+	// in ADCH register.
 	ADMUX = (1<<REFS0);
 	
 	// ADC Enable and prescaler of 128
 	// 16000000/128 = 125000
+	/**
+	 * ADEN: ADC Enable set to 1 to enable de ADC
+	 * ADIE: ADC Interrupt Enable. Set to 1 to enable de ADC interrupts
+	 * ADPS2::0: The prescalar is define by this three bits. 111 means 128.
+	 **/
 	ADCSRA = (1<<ADEN)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
 	sei();
 	
