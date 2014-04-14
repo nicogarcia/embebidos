@@ -47,6 +47,9 @@ class LCDKeypadDriver : public KeyboardDriver {
 	// loop through LCDKeypadDriver::Instance->checkEvents()
 	void (*function_to_be_called)();
 
+	// Timer enabled flag
+	bool timer_enabled;
+
 	// FIXME
 	void init_debouncing_timer();
 	

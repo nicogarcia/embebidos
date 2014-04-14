@@ -1,7 +1,7 @@
 #include "LCDKeypadKeys.h"
 
 // Threshold values for AD conversion
-unsigned int LCDKeypadKeys::ADCKeyValues[LCDKeypadKeys::KEY_COUNT] = { 30, 150, 360, 535, 760 };
+int LCDKeypadKeys::ADCKeyValues[LCDKeypadKeys::KEY_COUNT] = { 30, 150, 360, 535, 760 };
 	
 // Key names for text I/O
 const char* LCDKeypadKeys::KEY_NAMES[LCDKeypadKeys::KEY_COUNT] = { "RIGHT", "UP", "DOWN", "LEFT", "SELECT"};

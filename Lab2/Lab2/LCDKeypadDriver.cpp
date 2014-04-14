@@ -15,6 +15,8 @@ LCDKeypadDriver* LCDKeypadDriver::Instance(){
 LCDKeypadDriver::LCDKeypadDriver() {
 	event_flag = false;
 
+	timer_enabled = false;
+
 	for(int i = 0; i < LCDKeypadKeys::KEY_COUNT; i++){
 		callbacks[KEY_UP_CALLBACK][i] = NULL;
 		callbacks[KEY_DOWN_CALLBACK][i] = NULL;
@@ -68,18 +70,21 @@ void LCDKeypadDriver::checkEvents(){
 
 // TOREV
 void LCDKeypadDriver::init_debouncing_timer(){
-	// initialize timer1
-	noInterrupts();           // disable all interrupts
-	TCCR1A = 0;				  //doesn't need TCCR1A
-	TCCR1B = 0;
-	TCNT1  = 0;				  //initialize counter
+	// Set timer as enabled
+	timer_enabled = true;
 
-	OCR1A = 12500;            // compare match register 16MHz/64/20Hz
+	// Initialize timer1
+	noInterrupts();           // Disable all interrupts
+	TCCR1A = 0;				  // TCCR1A isn't necessary
+	TCCR1B = 0;
+	TCNT1  = 0;				  // Initialize counter
+
+	OCR1A = 12500;            // Compare match register 16MHz/64/20Hz
 	TCCR1B |= (1 << WGM12);   // CTC mode
 	TCCR1B |= (1 << CS11);    // 64 prescaler (i need to count 50ms, if i set prescalar to 64,
-	TCCR1B |= (1 << CS10);      //16MHz/64 = 250KHz->4us per cycle, and 50000/4 = 12500 cyles)
-	TIMSK1 |= (1 << OCIE1A);  // enable timer compare interrupt
-	interrupts();             // enable all interrupts
+	TCCR1B |= (1 << CS10);    // 16MHz/64 = 250KHz->4us per cycle, and 50000/4 = 12500 cyles)
+	TIMSK1 |= (1 << OCIE1A);  // Enable timer compare interrupt
+	interrupts();             // Enable all interrupts
 }
 
 /************************************************************************
@@ -89,7 +94,8 @@ void LCDKeypadDriver::init_debouncing_timer(){
 ************************************************************************/
 
 // Timer ISR variables
-volatile int key_read_before_timer;
+volatile int key_read_before_timer = -1;
+volatile int callback_type_before_timer = -1;
 
 // Key ISR variables
 volatile int last_key = -1;
@@ -101,14 +107,21 @@ volatile int key_involved = -1;
 void TIMER1_COMPA_vect(){
 	LCDKeypadDriver* kpd = LCDKeypadDriver::Instance();
 	
-	// when the counter matchs and the interruption is execute, then the callback is execute.
-	if(kpd->callbacks[callback_type][key_involved] != NULL){
-		kpd->function_to_be_called = kpd->callbacks[callback_type][key_involved];
-		kpd->event_flag = true;
+	// If the key read before timer is the same as the current
+	if(key_read_before_timer == key_involved &&
+		callback_type == callback_type_before_timer){
+		// And there's a callback registered then set callback to be executed.
+		if(kpd->callbacks[callback_type][key_involved] != NULL){
+			kpd->function_to_be_called = kpd->callbacks[callback_type][key_involved];
+			kpd->event_flag = true;
+		}
 	}
 	
-	//disable timer counter interrupt when the values match
+	// Disable timer counter interrupt when the values match.
 	TIMSK1 ^= (1 << OCIE1A);
+
+	// Set timer as disabled
+	kpd->timer_enabled = false;
 }
 
 // Key ISR
@@ -121,20 +134,25 @@ void ADC_vect(){
 	LCDKeypadDriver* kpd = LCDKeypadDriver::Instance();
 	
 	// Test if there were changes (keyup or keydown)
-	if(last_key != current_key){		
+	if(last_key != current_key){
+		// Toggle led when there's a change in state for debug
+		PORTB ^= (1 << PB5);
+
+		// key_involved stores the key being pushed or released
+		// to access the callbacks array
+		key_involved = (last_key == -1) ? current_key : last_key;
+
 		// Use last_key to set if there was keyup or keydown
 		// and store it in callback_type for direct access
 		callback_type = (last_key == -1) ? KEY_DOWN_CALLBACK : KEY_UP_CALLBACK;
 		
-		// key_involved stores the key being pushed or released
-		// to access the callbacks array
-		key_involved = (last_key == -1) ? current_key : last_key;
-		
-		// Store read key before programming debouncing timer
-		key_read_before_timer = current_key;
-		
-		//start debouncing timer
-		LCDKeypadDriver::init_debouncing_timer();
+		// If not started, start debouncing timer
+		if(!kpd->timer_enabled){
+			// Store read key and callback type before starting debouncing timer
+			key_read_before_timer = key_involved;
+			callback_type_before_timer = callback_type;
+			kpd->init_debouncing_timer();
+		}
 		
 		// Update last key
 		last_key = current_key;

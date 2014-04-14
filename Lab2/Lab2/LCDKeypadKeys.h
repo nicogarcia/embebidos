@@ -20,7 +20,7 @@ public:
 	static int GetKey(int analog_input);
 
 private:
-	static unsigned int ADCKeyValues[];
+	static int ADCKeyValues[];
 };
 
 #endif
