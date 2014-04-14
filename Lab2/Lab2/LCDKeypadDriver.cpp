@@ -21,8 +21,6 @@ LCDKeypadDriver::LCDKeypadDriver() {
 	}
 
 	adc_initialize();
-
-	//init_debouncing_timer();
 }
 
 // TOREV
@@ -72,13 +70,14 @@ void LCDKeypadDriver::checkEvents(){
 void LCDKeypadDriver::init_debouncing_timer(){
 	// initialize timer1
 	noInterrupts();           // disable all interrupts
-	TCCR1A = 0;
+	TCCR1A = 0;				  //doesn't need TCCR1A
 	TCCR1B = 0;
-	TCNT1  = 0;
+	TCNT1  = 0;				  //initialize counter
 
-	OCR1A = 31250;            // compare match register 16MHz/256/2Hz
+	OCR1A = 12500;            // compare match register 16MHz/64/20Hz
 	TCCR1B |= (1 << WGM12);   // CTC mode
-	TCCR1B |= (1 << CS12);    // 256 prescaler
+	TCCR1B |= (1 << CS11);    // 64 prescaler (i need to count 50ms, if i set prescalar to 64,
+	TCCR1B |= (1 << CS10);      //16MHz/64 = 250KHz->4us per cycle, and 50000/4 = 12500 cyles)
 	TIMSK1 |= (1 << OCIE1A);  // enable timer compare interrupt
 	interrupts();             // enable all interrupts
 }
@@ -102,11 +101,14 @@ volatile int key_involved = -1;
 void TIMER1_COMPA_vect(){
 	LCDKeypadDriver* kpd = LCDKeypadDriver::Instance();
 	
-	if(current_key == key_read_before_timer)
-		if(kpd->callbacks[callback_type][current_key] != NULL){
-			kpd->function_to_be_called = kpd->callbacks[callback_type][current_key];
-			kpd->event_flag = true;
-		}
+	// when the counter matchs and the interruption is execute, then the callback is execute.
+	if(kpd->callbacks[callback_type][key_involved] != NULL){
+		kpd->function_to_be_called = kpd->callbacks[callback_type][key_involved];
+		kpd->event_flag = true;
+	}
+	
+	//disable timer counter interrupt when the values match
+	TIMSK1 ^= (1 << OCIE1A);
 }
 
 // Key ISR
@@ -130,14 +132,10 @@ void ADC_vect(){
 		
 		// Store read key before programming debouncing timer
 		key_read_before_timer = current_key;
-		// TODO: Program debouncing timer
 		
-		// Set callback to be called from main loop (this should go in Timer ISR)		
-		if(kpd->callbacks[callback_type][key_involved] != NULL){
-			kpd->function_to_be_called = kpd->callbacks[callback_type][key_involved];
-			kpd->event_flag = true;
-		}
-
+		//start debouncing timer
+		LCDKeypadDriver::init_debouncing_timer();
+		
 		// Update last key
 		last_key = current_key;
 	}
