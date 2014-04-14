@@ -33,8 +33,8 @@ class LCDKeypadDriver : public KeyboardDriver {
 	// Singleton
 	LCDKeypadDriver();
 	LCDKeypadDriver(LCDKeypadDriver const&);
-	const LCDKeypadDriver& operator=(LCDKeypadDriver const&);
-	static LCDKeypadDriver* instance;
+	//const LCDKeypadDriver& operator=(LCDKeypadDriver const&);
+	static LCDKeypadDriver instance;
 
 	// Array of function pointers that registers callbacks
 	void (*callbacks[CALLBACKS_DEPTH][LCDKeypadKeys::KEY_COUNT])();
@@ -59,7 +59,7 @@ class LCDKeypadDriver : public KeyboardDriver {
 	// ADC ISR
 	friend void ADC_vect(void);
 	// Timer ISR
-	friend void TIMER1_COMPA_vect(void);
+	friend void TIMER2_COMPA_vect(void);
 };
 
 #endif

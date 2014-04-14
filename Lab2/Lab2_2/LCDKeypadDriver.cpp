@@ -4,11 +4,16 @@
 #include <avr/interrupt.h>
 
 // Singleton instance allocation
-LCDKeypadDriver* LCDKeypadDriver::instance = NULL;
+LCDKeypadDriver LCDKeypadDriver::instance;
 
+static bool initiated = false;
 // Singleton instance access method
 LCDKeypadDriver* LCDKeypadDriver::Instance(){
-	return instance ? instance : (instance = new LCDKeypadDriver());
+	if(!initiated){
+		instance = LCDKeypadDriver();
+		initiated = true;
+	}
+	return &instance;
 }
 
 // Contructor
@@ -70,30 +75,34 @@ void LCDKeypadDriver::checkEvents(){
 
 // TOREV
 void LCDKeypadDriver::init_debouncing_timer(){
-	// Set timer as enabled
-	timer_enabled = true;
-
 	// Initialize timer1
 	noInterrupts();           // Disable all interrupts
-	TCCR1A = 0;				  // TCCR1A isn't necessary
-	TCCR1B = 0;
-	TCNT1  = 0;				  // Initialize counter
 
-	OCR1A = 12500;            // Compare match register 16MHz/64/20Hz
-	TCCR1B |= (1 << WGM12);   // CTC mode
-	TCCR1B |= (1 << CS11);    // 64 prescaler (i need to count 50ms, if i set prescalar to 64,
-	TCCR1B |= (1 << CS10);    // 16MHz/64 = 250KHz->4us per cycle, and 50000/4 = 12500 cyles)
-	TIMSK1 |= (1 << OCIE1A);  // Enable timer compare interrupt
+	timer_enabled = true;	  // Set timer as enabled
+
+	TCCR2A = 0;				  // TCCR1A isn't necessary
+	TCCR2B = 0;
+	TCNT2  = 0;				  // Initialize counter
+
+	OCR2A = 255;              // Compare match register 16MHz/64/20Hz
+	TCCR2B |= (1 << WGM22);   // CTC mode
+	TCCR2B |= (1 << CS22);	  // 1024 prescaler
+	TCCR2B |= (1 << CS21);    // We need to count ~50ms so,
+	TCCR2B |= (1 << CS20);    // 16MHz/1024 = 15,62KHz ~> 64us per cycle,
+							  // and 50k/64 = 781,25 cycles)
+	TIMSK2 |= (1 << OCIE2A);  // Enable timer compare interrupt
 	interrupts();             // Enable all interrupts
 }
 
 /************************************************************************
-	C code to handle interrupts
+	Code to handle interrupts
 	TIMER1_COMPA_vect y ADC_vect are LCDKeypadDriver 'friends' so
 	they have access to its members (like callbacks array, defines, etc)
 ************************************************************************/
 
 // Timer ISR variables
+volatile const int count_max = 3; // approx 50ms with 1024 prescaler
+volatile int count_qty = 0; // counts the ticks of the timer
 volatile int key_read_before_timer = -1;
 volatile int callback_type_before_timer = -1;
 
@@ -104,7 +113,14 @@ volatile int callback_type = -1;
 volatile int key_involved = -1;
 
 // Timer ISR
-void TIMER1_COMPA_vect(){
+void TIMER2_COMPA_vect(){
+	// Test 2nd level timer against its max
+	if(++count_qty < count_max)
+		return;
+
+	// Reset 2nd level timer counter
+	count_qty = 0;
+
 	LCDKeypadDriver* kpd = LCDKeypadDriver::Instance();
 	
 	// If the key read before timer is the same as the current
@@ -118,7 +134,7 @@ void TIMER1_COMPA_vect(){
 	}
 	
 	// Disable timer counter interrupt when the values match.
-	TIMSK1 ^= (1 << OCIE1A);
+	TIMSK2 ^= (1 << OCIE2A);
 
 	// Set timer as disabled
 	kpd->timer_enabled = false;
