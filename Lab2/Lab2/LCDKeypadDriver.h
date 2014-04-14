@@ -18,7 +18,18 @@ extern "C" void ADC_vect(void) __attribute__ ((signal));
 
 // Implement LCDKeypadDriver for the LCDKeypad Shield
 class LCDKeypadDriver : public KeyboardDriver {
-	private:
+  public:
+	// Singleton instance access method
+	static LCDKeypadDriver* Instance();
+
+	// Function to be used from
+	void checkEvents();
+
+	// Unimplemented virtual methods, java equivalent of "interface"
+	void registerOnKeyDownCallback(void (*handler)(), int key);
+	void registerOnKeyUpCallback(void (*handler)(), int key);
+
+  private:
 	// Singleton
 	LCDKeypadDriver();
 	LCDKeypadDriver(LCDKeypadDriver const&);
@@ -38,18 +49,9 @@ class LCDKeypadDriver : public KeyboardDriver {
 
 	// FIXME
 	void init_debouncing_timer();
+	
+	// Initializes the ADC
 	void adc_initialize();
-
-	public:
-	// Singleton instance access method
-	static LCDKeypadDriver* Instance();
-
-	// Function to be used from
-	void checkEvents();
-
-	// Unimplemented virtual methods, java equivalent of "interface"
-	void registerOnKeyDownCallback(void (*handler)(), int key);
-	void registerOnKeyUpCallback(void (*handler)(), int key);
 
 	// ADC ISR
 	friend void ADC_vect(void);

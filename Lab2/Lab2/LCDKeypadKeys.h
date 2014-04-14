@@ -4,8 +4,6 @@
 // Describes LCDKeypad keys and converts
 // an analog signal to a key
 class LCDKeypadKeys {
-private:
-	static unsigned int ADCKeyValues[5];
 public:
 	enum Keys {
 		KEY_RIGHT = 0,
@@ -15,11 +13,14 @@ public:
 		KEY_SELECT = 4
 	};
 	
-	static const char* KEY_NAMES[5];
+	static const char* KEY_NAMES[];
 
 	static const int KEY_COUNT = 5;
 
-	static int GetKey(unsigned int analog_input);
+	static int GetKey(int analog_input);
+
+private:
+	static unsigned int ADCKeyValues[];
 };
 
 #endif

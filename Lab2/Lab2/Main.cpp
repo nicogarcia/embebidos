@@ -4,9 +4,9 @@
 #include "SoftwareSerial.h"
 #include <util/delay.h>
 
-int val = 0;
+/*int val = 0;
 int analogPin = 0;
-int last_key1 = 0;
+int last_key1 = 0;*/
 
 void printUpKeyDown(){
 	Serial.print("UP: Key Down!\n");
@@ -66,7 +66,8 @@ void setup(){
 }
 
 void loop(){
-	/*
+	/* 	Polling example to test the emulated keyboard
+
 	val = LCDKeypadKeys::GetKey(analogRead(analogPin));
 	if(val != last_key1){
 		if(val == -1)

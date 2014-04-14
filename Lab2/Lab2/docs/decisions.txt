@@ -1,0 +1,19 @@
+Documentation of design decisions
+=================================
+
+- Using a class for the driver:
+	Restrict and control access to driver's variables.
+
+- LCDKeypadDriver Singleton:
+	Initializations occur only once implicitly, instance cannot be deleted so it's constructor will be executed only once in the whole program life.
+	This is important taking in account that we are dealing directly with registers, and without this strategy it would be posible to have a new initialization without being aware.
+
+- No delay in ADC ISR:
+	ISR must be as short as possible to return the control to the program faster. Using delays wouldn't allow the program or other ISRs to execute unnecessarily. So for the debouncing solution we have to use a timer.
+
+
+Problems and it's solutions
+==================================
+
+- C ISR couln't access driver class members
+	Solution: define ISR function as friend of driver class.

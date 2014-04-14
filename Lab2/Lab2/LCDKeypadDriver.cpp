@@ -1,6 +1,6 @@
 #include "Arduino.h"
-#include <avr/io.h>
 #include "LCDKeypadDriver.h"
+#include <avr/io.h>
 #include <avr/interrupt.h>
 
 // Singleton instance allocation
@@ -27,6 +27,8 @@ LCDKeypadDriver::LCDKeypadDriver() {
 
 // TOREV
 void LCDKeypadDriver::adc_initialize(){
+	// Based on example found in http://maxembedded.com/2011/06/20/the-adc-of-the-avr/
+
 	// AREF = AVcc
 	//1 shift 6 places (01000000) to define the reference for the ADC. In this case 5V
 	//ADLAR bit is set 0 in ADMUX register because we want the high part of the conversion
@@ -41,15 +43,17 @@ void LCDKeypadDriver::adc_initialize(){
 	 * ADPS2::0: The prescalar is define by this three bits. 111 means 128.
 	 **/
 	ADCSRA = (1<<ADEN)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
-	sei();
+	sei(); // Necessary?
 	
 	ADCSRA |= 1<<ADSC;	// Start Conversion
 }
 
+// Registers the callback function for the keydown event of the corresponding key
 void LCDKeypadDriver::registerOnKeyDownCallback(void (*handler)(), int key){
 	callbacks[KEY_DOWN_CALLBACK][key] = handler;
 }
 
+// Registers the callback function for the keyup event of the corresponding key
 void LCDKeypadDriver::registerOnKeyUpCallback(void (*handler)(), int key){
 	callbacks[KEY_UP_CALLBACK][key] = handler;
 }
