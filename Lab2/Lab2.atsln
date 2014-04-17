@@ -2,11 +2,16 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Atmel Studio Solution File, Format Version 11.00
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Lab2_2", "Lab2_2\Lab2_2.cppproj", "{D2D7487C-D099-4C6B-ABAE-0B86C66788F9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C7777FC5-739F-4C01-82F1-9BF79646F9C6} = {C7777FC5-739F-4C01-82F1-9BF79646F9C6}
+	EndProjectSection
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Lab2_3", "Lab2_3\Lab2_3.cppproj", "{0D1DE3BE-07A0-462E-A5FC-5272207C471C}"
 	ProjectSection(ProjectDependencies) = postProject
-		{D2D7487C-D099-4C6B-ABAE-0B86C66788F9} = {D2D7487C-D099-4C6B-ABAE-0B86C66788F9}
+		{C7777FC5-739F-4C01-82F1-9BF79646F9C6} = {C7777FC5-739F-4C01-82F1-9BF79646F9C6}
 	EndProjectSection
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Lab2_Library", "Lab2_Library\Lab2_Library.cppproj", "{C7777FC5-739F-4C01-82F1-9BF79646F9C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,6 +27,10 @@ Global
 		{0D1DE3BE-07A0-462E-A5FC-5272207C471C}.Debug|AVR.Build.0 = Debug|AVR
 		{0D1DE3BE-07A0-462E-A5FC-5272207C471C}.Release|AVR.ActiveCfg = Release|AVR
 		{0D1DE3BE-07A0-462E-A5FC-5272207C471C}.Release|AVR.Build.0 = Release|AVR
+		{C7777FC5-739F-4C01-82F1-9BF79646F9C6}.Debug|AVR.ActiveCfg = Debug|AVR
+		{C7777FC5-739F-4C01-82F1-9BF79646F9C6}.Debug|AVR.Build.0 = Debug|AVR
+		{C7777FC5-739F-4C01-82F1-9BF79646F9C6}.Release|AVR.ActiveCfg = Release|AVR
+		{C7777FC5-739F-4C01-82F1-9BF79646F9C6}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

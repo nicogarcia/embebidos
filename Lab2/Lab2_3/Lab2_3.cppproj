@@ -27,15 +27,15 @@
     <eraseonlaunchrule>0</eraseonlaunchrule>
     <AsfFrameworkConfig>
       <framework-data xmlns="">
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.11.0" />
-  </dependencies>
-</framework-data>
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.11.0" />
+        </dependencies>
+      </framework-data>
     </AsfFrameworkConfig>
     <avrtoolinterface />
   </PropertyGroup>
@@ -111,11 +111,11 @@
   </avrgcccpp.compiler.symbols.DefSymbols>
   <avrgcccpp.compiler.directories.IncludePaths>
     <ListValues>
-      <Value>C:\nico\arduino-1.0.4\hardware\arduino\cores\arduino</Value>
-      <Value>C:\nico\arduino-1.0.4\hardware\arduino\variants\standard</Value>
-      <Value>C:\nico\arduino-1.0.4\libraries\LiquidCrystal</Value>
-      <Value>C:\nico\arduino-1.0.4\libraries\SoftwareSerial</Value>
-      <Value>../../Lab2_2</Value>
+      <Value>../../Lab2_Library</Value>
+      <Value>%25ARDUINO_HOME%25\hardware\arduino\cores\arduino</Value>
+      <Value>%25ARDUINO_HOME%25\hardware\arduino\variants\standard</Value>
+      <Value>%25ARDUINO_HOME%25\libraries\SoftwareSerial</Value>
+      <Value>%25ARDUINO_HOME%25\libraries\LiquidCrystal</Value>
     </ListValues>
   </avrgcccpp.compiler.directories.IncludePaths>
   <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
@@ -131,7 +131,8 @@
   </avrgcccpp.linker.libraries.Libraries>
   <avrgcccpp.linker.libraries.LibrarySearchPaths>
     <ListValues>
-      <Value>../../../../../arduino-1.0.4</Value>
+      <Value>%25ARDUINO_HOME%25</Value>
+      <Value>..</Value>
     </ListValues>
   </avrgcccpp.linker.libraries.LibrarySearchPaths>
   <avrgcccpp.linker.memorysettings.Comment>&lt;segmentname&gt;=&lt;address&gt;, for example  .boot=0xff</avrgcccpp.linker.memorysettings.Comment>
@@ -143,10 +144,22 @@
     <OutputType>Executable</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Lab2_3.cpp">
+    <Compile Include="KeyManagement.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="KeyManagement.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Main.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Stopwatch.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Stopwatch.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="StopwatchState.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="StopwatchState.h">
@@ -154,9 +167,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Lab2_2\Lab2_2.cppproj">
-      <Name>Lab2_2</Name>
-      <Project>{d2d7487c-d099-4c6b-abae-0b86c66788f9}</Project>
+    <None Include="libcoreArduinoUno104.a">
+      <SubType>compile</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lab2_Library\Lab2_Library.cppproj">
+      <Name>Lab2_Library</Name>
+      <Project>{c7777fc5-739f-4c01-82f1-9bf79646f9c6}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
