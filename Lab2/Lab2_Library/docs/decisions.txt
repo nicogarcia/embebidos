@@ -1,0 +1,7 @@
+
+// Sketch!
+
+Single "instance" objects are constructed like Serial
+
+class Serial_ { };
+extern Serial_ Serial;

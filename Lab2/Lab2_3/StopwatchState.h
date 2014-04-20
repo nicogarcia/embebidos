@@ -17,7 +17,8 @@ public:
         DOWN = 2,
         SELECT_LONG = 3,
         UP_LONG = 4,
-        DOWN_LONG = 5
+        DOWN_LONG = 5,
+        NONE = 6
     };
 private:
     void (*state_action)();
@@ -30,7 +31,7 @@ private:
 
 class Response {
 public:
-    Response(StopwatchState* ss, void (*action)()) : nextState(ss), Action(action) { }
+    Response(StopwatchState* ss, void (*action)()) : nextState(ss), Action(action) {  }
 
     StopwatchState* nextState;
     void (*Action)();

@@ -2,23 +2,33 @@
 #include "Stopwatch.h"
 #include "StopwatchState.h"
 
-StopwatchState Stopwatch_::MAD = StopwatchState(&MAD_state_action);
-StopwatchState Stopwatch_::MCA = StopwatchState(Stopwatch_::MCA_state_action);
-StopwatchState Stopwatch_::MCD = StopwatchState(Stopwatch_::MCD_state_action);
-StopwatchState Stopwatch_::MVT = StopwatchState(Stopwatch_::MVT_state_action);
-StopwatchState Stopwatch_::MP = StopwatchState(Stopwatch_::MP_state_action);
+StopwatchState Stopwatch_::MAD = StopwatchState(MAD_state_action);
+StopwatchState Stopwatch_::MCA = StopwatchState(MCA_state_action);
+StopwatchState Stopwatch_::MCD = StopwatchState(MCD_state_action);
+StopwatchState Stopwatch_::MVT = StopwatchState(MVT_state_action);
+StopwatchState Stopwatch_::MP = StopwatchState(MP_state_action);
 
+// FIXME: Using new, could be changed, just do it
 Stopwatch_::Stopwatch_() {
+    next_available_index = 0;
+    times_count = 0;
+    viewing_index = 0;
 
     // MP State config
     MP.setEventResponse(StopwatchState::UP,
-                        new Response(&MCA, NULL));
+                        new Response(&MCA, start_from_last_time));
+
+    MP.setEventResponse(StopwatchState::UP_LONG,
+                        new Response(&MAD, start_from_zero));
 
     MP.setEventResponse(StopwatchState::DOWN,
-                        new Response(&MCD, NULL));
+                        new Response(&MCD, start_from_last_time));
+
+    MP.setEventResponse(StopwatchState::DOWN_LONG,
+                        new Response(&MAD, start_from_max_time));
 
     MP.setEventResponse(StopwatchState::SELECT,
-                        new Response(&MVT, NULL));
+                        new Response(&MVT, reset_viewing_time));
 
     MP.setEventResponse(StopwatchState::SELECT_LONG,
                         new Response(&MAD, NULL));
@@ -57,49 +67,102 @@ Stopwatch_::Stopwatch_() {
     MAD.setEventResponse(StopwatchState::SELECT,
                          new Response(&MP, NULL));
 
+    // MAD Idle time transition
+    MAD.setEventResponse(StopwatchState::NONE,
+                         new Response(&MP, NULL));
+
 }
 
+// Stopwatch stops refreshing
 void Stopwatch_::MP_state_action() {
-    // Pause Stopwatch
-    // Show current time
+    // TODO: Show current time
 }
 
 void Stopwatch_::MCA_state_action() {
-    // Get current Stopwatch time
-    // Show current time
+    // TODO: Get current Stopwatch time
+    // TODO: Show current time
 }
 
 void Stopwatch_::MCD_state_action() {
-    // Get current Stopwatch time
-    // Show current time
+    // TODO: Get current Stopwatch time
+    // TODO: Show current time
 }
 
 void Stopwatch_::MVT_state_action() {
     // Show 'current_viewing_time'
+    if(times_count == 0) {
+        // TODO: Display NO SAVED TIMES message
+    } else {
+        // TODO: Display viewing index
+    }
 }
 
 void Stopwatch_::MAD_state_action() {
-    // Show current time
-    // Show current bright
+    // TODO: Show current time
+    // TODO: Show current bright
+}
+
+// Load last time as current time
+void Stopwatch_::start_from_last_time() {
+    if(times_count == 0) {
+        // TODO: Display NO SAVED TIMES message
+    } else
+        current_time = times[(next_available_index - 1) % times_count];
+}
+
+void Stopwatch_::start_from_zero() {
+    current_time = 0;
+}
+
+void Stopwatch_::start_from_max_time() {
+    current_time = 594158;
+}
+
+void Stopwatch_::reset_viewing_time() {
+    viewing_index = (next_available_index - 1) % TIMES_LENGTH;
 }
 
 void Stopwatch_::store_current_time() {
     //  Save current time
-    // Show message ? How ?
+    times[next_available_index] = current_time;
+
+    // Increase writing pointer
+    next_available_index = (next_available_index + 1) % TIMES_LENGTH;
+
+    // Increase times count if not full
+    times_count = min(times_count, TIMES_LENGTH);
+
+    // TODO: Show message ? How ?
 }
 
+// Increase current viewing time pointer
 void Stopwatch_::show_next_stored_time() {
-    // Increase current viewing time pointer
+    // If viewing time is the latest stored, ignore action
+    if((viewing_index + 1) % times_count == next_available_index)
+        return;
+
+    viewing_index = (viewing_index + 1) % times_count;
 }
 
+// Decrease current viewing time pointer
 void Stopwatch_::show_previous_stored_time() {
-    // Decrease current viewing time pointer
+    // If the array is full, then the last to show should be 'next_available_index'
+    if(times_count == TIMES_LENGTH) {
+        // If viewing is next_avialable, ignore the command, else decrease pointer
+        if(viewing_index == next_available_index)
+            return;
+        else
+            viewing_index = (viewing_index - 1) % times_count;
+    } else
+        viewing_index = max(0, viewing_index - 1);
 }
 
 void Stopwatch_::increase_lcd_bright() {
-    // Increase lcd bright
+    current_bright = min(100, current_bright + 20);
+    // TODO: Increase lcd bright
 }
 
 void Stopwatch_::decrease_lcd_bright() {
-    // Decrease lcd bright
+    current_bright = max(0, current_bright - 20);
+    // TODO: Decrease lcd bright
 }
