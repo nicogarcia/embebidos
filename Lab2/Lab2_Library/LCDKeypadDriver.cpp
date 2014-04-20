@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "LCDKeypadDriver.h"
+#include "SystemClock.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -15,8 +16,6 @@ LCDKeypadDriver::LCDKeypadDriver() {
     }
 
     adc_initialize();
-
-    init_timer();
 }
 
 // ADC initialization routine
@@ -54,51 +53,11 @@ void LCDKeypadDriver::registerOnKeyUpCallback(void (*handler)(), int key) {
     callbacks[KEY_UP_CALLBACK][key] = handler;
 }
 
-// Checks if there's a function to be called
-// It should be used in the main loop to check if there's a function to
-// call, note that this is made outside of the ISR
-void LCDKeypadDriver::checkEvents() {
-    if(event_flag) {
-        function_to_be_called();
-        event_flag = false;
-    }
-}
-
-// Initialize Timer2 options
-void LCDKeypadDriver::init_timer() {
-    noInterrupts();           // Disable all interrupts
-
-    TCCR2A = 0;				  // TCCR1A isn't necessary
-    TCCR2B = 0;
-    TCNT2  = 0;				  // Initialize counter
-
-    OCR2A = 255;              // Compare match register 16MHz/64/20Hz
-    TCCR2B |= (1 << WGM22);   // CTC mode
-    TCCR2B |= (1 << CS22);	  // 1024 prescaler
-    TCCR2B |= (1 << CS21);    // We need to count ~50ms so,
-    TCCR2B |= (1 << CS20);    // 16MHz/1024 = 15,62KHz ~> 64us per cycle,
-    // and 50k/64 = 781,25 cycles)
-    TIMSK2 &= ~(1<<OCIE2A);	  // Disable timer ISR
-
-    interrupts();             // Enable all interrupts
-}
-
-// Start debouncing timer, to be launched when any key changes
-void LCDKeypadDriver::start_debouncing_timer() {
-    TIMSK2 |= (1 << OCIE2A);  // Enable timer compare interrupt
-}
-
 /************************************************************************
 	Code to handle interrupts
 	TIMER1_COMPA_vect y ADC_vect are LCDKeypadDriver 'friends' so
 	they have access to its members (like callbacks array, defines, etc)
 ************************************************************************/
-
-// Timer ISR variables
-volatile const int count_max = 3; // approx 50ms with 1024 prescaler
-volatile int count_qty = 0; // counts the ticks of the timer
-volatile int key_read_before_timer = -1;
-volatile int callback_type_before_timer = -1;
 
 // Key ISR variables
 volatile int last_key = -1;
@@ -106,11 +65,9 @@ volatile int current_key = -1;
 volatile int callback_type = -1;
 volatile int key_involved = -1;
 
-// Timer ISR
-void TIMER2_COMPA_vect() {
-    ADCSRA |= 1<<ADSC;	// Start new ADC onversion
-
-    TIMSK2 ^= (1 << OCIE2A); // Disable timer counter interrupt when the values match.
+// FIXME: Debouncing
+void debouncing() {
+    ADCSRA |= 1<<ADSC;	// Start new ADC conversion
 }
 
 // FIXME: TO BE REVIEWED: TIMER SHOULD BE STARTED ON CHANGE, ELSE ADC SHOULD KEEP CONVERTING!
@@ -135,8 +92,8 @@ void ADC_vect() {
 
         // If there's a callback for current key and action, set its callback to be launched
         if(KeypadDriver.callbacks[callback_type][key_involved] != NULL) {
-            KeypadDriver.function_to_be_called = KeypadDriver.callbacks[callback_type][key_involved];
-            KeypadDriver.event_flag = true;
+            SystemClock.enqueue(KeypadDriver.callbacks[callback_type][key_involved]);
+            //KeypadDriver.event_flag = true;
         }
 
         // Update last key
@@ -145,5 +102,6 @@ void ADC_vect() {
 
     // Wait for timer to launch the next ADC conversion after
     // debouncing period
-    KeypadDriver.start_debouncing_timer();
+    //SystemClock.attach(Task(5, debouncing));
+    debouncing();
 }

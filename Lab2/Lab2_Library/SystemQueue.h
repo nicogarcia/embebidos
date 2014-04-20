@@ -14,9 +14,9 @@ private:
     int head;
     int tail;
 
-    //FIXME: Some other metoth to pass the max ?
-    static const int max = 5;
-    fptr functions_to_be_called [max];
+    //FIXME: Some other method to pass the max ?
+    static const int MAX = 10;
+    fptr functions_to_be_called [MAX];
 
 public:
 
@@ -24,6 +24,9 @@ public:
 
     //Enqueue a new function to be execute in the SystemQueue
     void enqueue(fptr function );
+
+    //Dequeue function
+    fptr dequeue();
 
     //Execute and dequeue the head function in the SystemQueue
     bool execute();

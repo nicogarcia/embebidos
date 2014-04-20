@@ -1,99 +1,93 @@
 #include "Arduino.h"
 #include "Stopwatch.h"
 #include "StopwatchState.h"
+#include "UserInterface.h"
+#include "SystemClock.h"
 
-StopwatchState Stopwatch_::MAD = StopwatchState(MAD_state_action);
-StopwatchState Stopwatch_::MCA = StopwatchState(MCA_state_action);
-StopwatchState Stopwatch_::MCD = StopwatchState(MCD_state_action);
-StopwatchState Stopwatch_::MVT = StopwatchState(MVT_state_action);
-StopwatchState Stopwatch_::MP = StopwatchState(MP_state_action);
-
-// FIXME: Using new, could be changed, just do it
 Stopwatch_::Stopwatch_() {
+    MAD = StopwatchState(MAD_state_action);
+    MCA = StopwatchState(MCA_state_action);
+    MCD = StopwatchState(MCD_state_action);
+    MVT = StopwatchState(MVT_state_action);
+    MP = StopwatchState(MP_state_action);
+
     next_available_index = 0;
     times_count = 0;
     viewing_index = 0;
 
+    current_state = &MP;
+
     // MP State config
-    MP.setEventResponse(StopwatchState::UP,
-                        new Response(&MCA, start_from_last_time));
+    MP.setEventResponse(StopwatchState::UP, &MCA, (Stopwatch_::*) &start_from_last_time);
 
-    MP.setEventResponse(StopwatchState::UP_LONG,
-                        new Response(&MAD, start_from_zero));
+    MP.setEventResponse(StopwatchState::UP_LONG, &MCA, start_from_zero);
 
-    MP.setEventResponse(StopwatchState::DOWN,
-                        new Response(&MCD, start_from_last_time));
+    MP.setEventResponse(StopwatchState::DOWN, &MCD, start_from_last_time);
 
-    MP.setEventResponse(StopwatchState::DOWN_LONG,
-                        new Response(&MAD, start_from_max_time));
+    MP.setEventResponse(StopwatchState::DOWN_LONG, &MCD, start_from_max_time);
 
-    MP.setEventResponse(StopwatchState::SELECT,
-                        new Response(&MVT, reset_viewing_time));
+    MP.setEventResponse(StopwatchState::SELECT, &MVT, reset_viewing_time);
 
-    MP.setEventResponse(StopwatchState::SELECT_LONG,
-                        new Response(&MAD, NULL));
+    MP.setEventResponse(StopwatchState::SELECT_LONG, &MAD, NULL);
 
     // MCA State config
-    MCA.setEventResponse(StopwatchState::UP,
-                         new Response(&MCA, store_current_time));
+    MCA.setEventResponse(StopwatchState::UP, &MCA, store_current_time);
 
-    MCA.setEventResponse(StopwatchState::SELECT,
-                         new Response(&MP, NULL));
+    MCA.setEventResponse(StopwatchState::SELECT, &MP, NULL);
 
     // MCD State config
-    MCD.setEventResponse(StopwatchState::DOWN,
-                         new Response(&MCD, store_current_time));
+    MCD.setEventResponse(StopwatchState::DOWN, &MCD, store_current_time);
 
-    MCD.setEventResponse(StopwatchState::SELECT,
-                         new Response(&MP, NULL));
+    MCD.setEventResponse(StopwatchState::SELECT, &MP, NULL);
 
     // MVT State config
-    MVT.setEventResponse(StopwatchState::UP,
-                         new Response(&MVT, show_next_stored_time));
+    MVT.setEventResponse(StopwatchState::UP, &MVT, show_next_stored_time);
 
-    MVT.setEventResponse(StopwatchState::DOWN,
-                         new Response(&MVT, show_previous_stored_time));
+    MVT.setEventResponse(StopwatchState::DOWN, &MVT, show_previous_stored_time);
 
-    MVT.setEventResponse(StopwatchState::SELECT,
-                         new Response(&MP, NULL));
+    MVT.setEventResponse(StopwatchState::SELECT, &MP, NULL);
 
     // MAD State config
-    MAD.setEventResponse(StopwatchState::UP,
-                         new Response(&MAD, increase_lcd_bright));
+    MAD.setEventResponse(StopwatchState::UP, &MAD, increase_lcd_bright);
 
-    MAD.setEventResponse(StopwatchState::DOWN,
-                         new Response(&MAD, decrease_lcd_bright));
+    MAD.setEventResponse(StopwatchState::DOWN, &MAD, decrease_lcd_bright);
 
-    MAD.setEventResponse(StopwatchState::SELECT,
-                         new Response(&MP, NULL));
+    MAD.setEventResponse(StopwatchState::SELECT, &MP, NULL);
 
     // MAD Idle time transition
-    MAD.setEventResponse(StopwatchState::NONE,
-                         new Response(&MP, NULL));
+    MAD.setEventResponse(StopwatchState::NONE, &MP, NULL);
 
 }
 
 // Stopwatch stops refreshing
 void Stopwatch_::MP_state_action() {
     // TODO: Show current time
+    Serial.print("PAUSE MODE: ");
+    UserInterface.printTime(SystemClock.getMillis() / 10);
 }
 
 void Stopwatch_::MCA_state_action() {
     // TODO: Get current Stopwatch time
     // TODO: Show current time
+    Serial.print("MCA MODE: ");
+    UserInterface.printTime(SystemClock.getMillis() / 10);
 }
 
 void Stopwatch_::MCD_state_action() {
     // TODO: Get current Stopwatch time
     // TODO: Show current time
+    Serial.print("MCD MODE: ");
+    UserInterface.printTime(SystemClock.getMillis() / 10);
 }
 
 void Stopwatch_::MVT_state_action() {
     // Show 'current_viewing_time'
-    if(times_count == 0) {
+    if(Stopwatch_::times_count == 0) {
         // TODO: Display NO SAVED TIMES message
+        Serial.println("MVT: No saved times");
     } else {
         // TODO: Display viewing index
+        UserInterface.printTime(times[viewing_index]);
     }
 }
 
@@ -106,6 +100,7 @@ void Stopwatch_::MAD_state_action() {
 void Stopwatch_::start_from_last_time() {
     if(times_count == 0) {
         // TODO: Display NO SAVED TIMES message
+        Serial.println("Cannot continue from last saved time. No saved times.");
     } else
         current_time = times[(next_available_index - 1) % times_count];
 }
@@ -133,6 +128,7 @@ void Stopwatch_::store_current_time() {
     times_count = min(times_count, TIMES_LENGTH);
 
     // TODO: Show message ? How ?
+    Serial.println("Time saved OK!");
 }
 
 // Increase current viewing time pointer

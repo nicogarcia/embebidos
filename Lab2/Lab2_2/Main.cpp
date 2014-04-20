@@ -1,12 +1,8 @@
 #include "Arduino.h"
+#include "SoftwareSerial.h"
+#include "SystemClock.h"
 #include "LCDKeypadKeys.h"
 #include "LCDKeypadDriver.h"
-#include "SoftwareSerial.h"
-#include <util/delay.h>
-
-/*int val = 0;
-int analogPin = 0;
-int last_key1 = 0;*/
 
 void printUpKeyDown() {
     Serial.print("UP: Key Down!\n");
@@ -78,5 +74,5 @@ void loop() {
     _delay_ms(100);*/
 
     // Check and execute if there were events triggered
-    KeypadDriver.checkEvents();
+    SystemClock.checkEvents();
 }

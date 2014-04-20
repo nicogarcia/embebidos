@@ -5,17 +5,21 @@
 
 SystemClock_ SystemClock;
 
-
 SystemClock_::SystemClock_() {
 
-    task_attached = 0;
+    tasks_attached = 0;
 
     millis = 0;
     event_flag = false;
 
     EmptyTask = Task();
 
-    functions_to_be_called = SystemQueue();
+    ReadyTasksQueue = SystemQueue();
+
+    for(int i = 0; i < TOTAL_TASKS; i++)
+        tasks[i] = EmptyTask;
+
+    init_timer2();
 }
 
 // Get system millis
@@ -24,7 +28,7 @@ unsigned long SystemClock_::getMillis() {
 }
 
 // Initialize TIMER0 parameters
-void SystemClock_::init() {
+void SystemClock_::init_timer2() {
     // Initialize timer0
     noInterrupts();           // Disable all interrupts
 
@@ -44,29 +48,25 @@ void SystemClock_::init() {
 
 // Attach callback
 void SystemClock_::attach(Task task) {
-    if (task_attached < TOTAL_TASKS) {
+    if (tasks_attached < TOTAL_TASKS) {
         //put the task in the array of to do task
         for (int i = 0; i < TOTAL_TASKS; i++) {
             if (tasks[i].callback == NULL) {
                 tasks[i] = task;
 
                 //set the start_time (the current time)
-                tasks[i].start_time = getMillis();
+                tasks[i].start_time = millis;
                 break;
             }
         }
-        task_attached++;
+        tasks_attached++;
     }
 }
 
 // Check if there's a callback to call
-//TODO: if  attach is executing when there are functions to be call,
+//TODO: if  attach is executing when there are functions to be called,
 void SystemClock_::checkEvents() {
-    if (event_flag) {
-        while (functions_to_be_called.execute()) {}
-        event_flag = false;
-    }
-
+    while (ReadyTasksQueue.execute()) {}
 }
 
 unsigned long SystemClock_::getTaskTime(int i) {
@@ -90,22 +90,30 @@ fptr SystemClock_::getTaskCallback(int i) {
 void SystemClock_::deleteTask(int i) {
     if (i < TOTAL_TASKS) {
         tasks[i] = EmptyTask;
-        task_attached--;
+        tasks_attached--;
     }
 }
 
+void SystemClock_::enqueue( fptr function ) {
+    ReadyTasksQueue.enqueue(function);
+}
+
 // Timer ISR to count millis
-void TIMER0_COMPA_vect() {
+void TIMER2_COMPA_vect() {
     SystemClock.millis++;
-    for (int i = 0; i < SystemClock.TOTAL_TASKS; i++) {
-        //When it's time to execute the function
-        if(SystemClock.millis - SystemClock.getTaskStartTime(i) >= SystemClock.getTaskTime(i)) {
-            //Enqueue the function to do.
-            SystemClock.functions_to_be_called.enqueue(SystemClock.getTaskCallback(i));
-            //delete the task
-            SystemClock.deleteTask(i);
+    /*for (int i = 0; i < SystemClock.TOTAL_TASKS; i++) {
+        // FIXME: Redo this conditional
+        if(SystemClock.tasks[i].callback != NULL) {
+            //When it's time to execute the function
+            if(SystemClock.millis - SystemClock.getTaskStartTime(i) >= SystemClock.getTaskTime(i)) {
+                //Enqueue the function to do.
+                SystemClock.ReadyTasksQueue.enqueue(SystemClock.getTaskCallback(i));
+                //delete the task
+                SystemClock.deleteTask(i);
+            }
+            // FIXME: Is flag necessary? Could it be done with Queue.size?
+            //if (!SystemClock.ReadyTasksQueue.isEmpty())
+            //    SystemClock.event_flag = true;
         }
-        if (!SystemClock.functions_to_be_called.isEmpty())
-            SystemClock.event_flag = true;
-    }
+    }*/
 }

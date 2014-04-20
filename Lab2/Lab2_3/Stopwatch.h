@@ -13,54 +13,46 @@ private:
     static const unsigned long MAX_TIME = 594158;
 
     // States
-    static StopwatchState MCA, MCD, MP, MVT, MAD;
+    StopwatchState MCA, MCD, MP, MVT, MAD;
 
     // Current time
-    static unsigned long current_time;
+    unsigned long current_time;
 
     // Stored times
     static const int TIMES_LENGTH = 10;
-    static long times[TIMES_LENGTH];
-    static int times_count;
-    static int next_available_index;
-    static int viewing_index;
+    long times[TIMES_LENGTH];
+    int times_count;
+    int next_available_index;
+    int viewing_index;
 
     // Current bright
-    static int current_bright;
-
-    // Registered in the driver to handle all key down events
-    // Initiates a timer to detect long press
-    void key_down_handler();
-
-    // Registered in the driver to handle all key up events
-    // Checks the press timer to determine if it was a long press
-    void key_up_handler();
+    int current_bright;
 
     // State functions
-    static void MP_state_action();
-    static void MCA_state_action();
-    static void MCD_state_action();
-    static void MVT_state_action();
-    static void MAD_state_action();
+    void MP_state_action();
+    void MCA_state_action();
+    void MCD_state_action();
+    void MVT_state_action();
+    void MAD_state_action();
 
     // Transition functions
-    static void start_from_last_time();
+    void start_from_last_time();
 
-    static void start_from_zero();
+    void start_from_zero();
 
-    static void reset_viewing_time();
+    void reset_viewing_time();
 
-    static void start_from_max_time();
+    void start_from_max_time();
 
-    static void store_current_time();
+    void store_current_time();
 
-    static void show_next_stored_time();
+    void show_next_stored_time();
 
-    static void show_previous_stored_time();
+    void show_previous_stored_time();
 
-    static void increase_lcd_bright();
+    void increase_lcd_bright();
 
-    static void decrease_lcd_bright();
+    void decrease_lcd_bright();
 };
 
 extern Stopwatch_ Stopwatch;

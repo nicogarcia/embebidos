@@ -5,7 +5,7 @@
 #include "SystemQueue.h"
 
 // Define C extern for ISR
-extern "C" void TIMER0_COMPA_vect(void) __attribute__ ((signal));
+extern "C" void TIMER2_COMPA_vect(void) __attribute__ ((signal));
 
 //
 typedef void (*fptr)();
@@ -32,32 +32,36 @@ public:
 
     static const int TOTAL_TASKS = 5;
 
+    // Attach callback to pending queue
+    void attach(Task task);
+
+    // Enqueue ready callback to execute
+    void enqueue(fptr function);
 private:
 
     // System millis (long)
-    unsigned long millis;
+    volatile unsigned long millis;
 
     // Initialize TIMER2 parameters
-    void init();
+    void init_timer2();
 
     // Callback variables
-    unsigned long time_ms;
-    bool event_flag;
+    volatile bool event_flag;
 
     //Array of tasks
     Task tasks[TOTAL_TASKS];
 
     // A queue of functions to be called
-    SystemQueue functions_to_be_called;
+    SystemQueue ReadyTasksQueue;
 
-    // Attach callback
-    void attach(Task task);
+    // A queue for pending tasks
+    SystemQueue PendingTasks;
 
     // Timer ISR to count millis
-    friend void TIMER0_COMPA_vect();
+    friend void TIMER2_COMPA_vect();
 
     //Number of task attach
-    int task_attached;
+    int tasks_attached;
 
     Task EmptyTask;
 };

@@ -1,12 +1,11 @@
 #ifndef STOPWATCHSTATE_H_
 #define STOPWATCHSTATE_H_
 
-class Response;
-
 class StopwatchState {
 public:
     StopwatchState(void (*)());
-    void setEventResponse(int key_event, Response* response);
+
+    void setEventResponse(int key_event, StopwatchState* next_state, void (*Action)());
 
     // Executes its Response to the key_event
     void execute(int key_event);
@@ -21,20 +20,23 @@ public:
         NONE = 6
     };
 private:
+    class Response {
+    public:
+        Response() {
+            nextState = NULL;
+        }
+        Response(StopwatchState* ns, void (*action)()): nextState(ns), Action(action) {}
+        StopwatchState* nextState;
+        void (*Action)();
+    };
+
     void (*state_action)();
     static const int CALLBACK_TYPE_COUNT = 3;
 
     // Store next state and callbacks for each state, simple and long keypress
-    Response* responses[CALLBACK_TYPE_COUNT * 2];
+    Response responses[CALLBACK_TYPE_COUNT * 2];
 
 };
 
-class Response {
-public:
-    Response(StopwatchState* ss, void (*action)()) : nextState(ss), Action(action) {  }
-
-    StopwatchState* nextState;
-    void (*Action)();
-};
 
 #endif /* STOPWATCHSTATE_H_ */
