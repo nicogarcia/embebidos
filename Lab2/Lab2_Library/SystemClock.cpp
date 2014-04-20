@@ -32,15 +32,14 @@ void SystemClock_::init_timer2() {
     // Initialize timer0
     noInterrupts();           // Disable all interrupts
 
-    TCCR2A = 0;				  // TCCR1A isn't necessary
+    TCCR2A = 0;
     TCCR2B = 0;
     TCNT2  = 0;				  // Initialize counter
 
     OCR2A = 249;              // Compare match register 16MHz/64=250KHz --> 1ms*250KHz -1 = 249
-    TCCR2B |= (1 << WGM21);   // CTC mode
+    TCCR2A |= (1 << WGM21) ;   // CTC mode
 
-    TCCR2B |= (1 << CS21);    // We need to count 1ms so...  | CS22 | CS21 | CS20 |
-    TCCR2B |= (1 << CS20);	  // 64 prescaler			    |	0	 | 1	    |	1     |
+    TCCR2B |= (1 << CS22);    // 64 prescaler
 
     TIMSK2 |= (1 << OCIE2A);  // Enable timer compare interrupt
     interrupts();             // Enable all interrupts
@@ -101,7 +100,8 @@ void SystemClock_::enqueue( fptr function ) {
 // Timer ISR to count millis
 void TIMER2_COMPA_vect() {
     SystemClock.millis++;
-    /*for (int i = 0; i < SystemClock.TOTAL_TASKS; i++) {
+
+    for (int i = 0; i < SystemClock.TOTAL_TASKS; i++) {
         // FIXME: Redo this conditional
         if(SystemClock.tasks[i].callback != NULL) {
             //When it's time to execute the function
@@ -115,5 +115,5 @@ void TIMER2_COMPA_vect() {
             //if (!SystemClock.ReadyTasksQueue.isEmpty())
             //    SystemClock.event_flag = true;
         }
-    }*/
+    }
 }
