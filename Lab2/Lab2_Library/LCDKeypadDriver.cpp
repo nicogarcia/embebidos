@@ -67,6 +67,7 @@ volatile int key_involved = -1;
 
 // FIXME: Debouncing
 void debouncing() {
+    //_delay_ms(50);
     ADCSRA |= 1<<ADSC;	// Start new ADC conversion
 }
 
@@ -91,10 +92,8 @@ void ADC_vect() {
         callback_type = (last_key == -1) ? KEY_DOWN_CALLBACK : KEY_UP_CALLBACK;
 
         // If there's a callback for current key and action, set its callback to be launched
-        if(KeypadDriver.callbacks[callback_type][key_involved] != NULL) {
+        if(KeypadDriver.callbacks[callback_type][key_involved] != NULL)
             SystemClock.enqueue(KeypadDriver.callbacks[callback_type][key_involved]);
-            //KeypadDriver.event_flag = true;
-        }
 
         // Update last key
         last_key = current_key;
@@ -102,6 +101,6 @@ void ADC_vect() {
 
     // Wait for timer to launch the next ADC conversion after
     // debouncing period
-    //SystemClock.attach(Task(5, debouncing));
-    debouncing();
+    SystemClock.attach(Task(30, debouncing));
+    //debouncing();
 }

@@ -6,6 +6,8 @@
 #include "StopwatchState.h"
 #include "SystemClock.h"
 
+KeyManagement_ KeyManagement;
+
 KeyManagement_::KeyManagement_() {
     idle_time = 0;
     start_time = 0;
@@ -16,7 +18,7 @@ KeyManagement_::KeyManagement_() {
                        };
 
     for(int i = 0; i < key_count; i++)
-        KeypadDriver.registerOnKeyDownCallback(down_key_callback, keys[i]);
+        KeypadDriver.registerOnKeyDownCallback(key_down_callback, keys[i]);
 
     KeypadDriver.registerOnKeyUpCallback(up_key_callback, LCDKeypadKeys::KEY_UP);
     KeypadDriver.registerOnKeyUpCallback(down_key_callback, LCDKeypadKeys::KEY_DOWN);
@@ -26,6 +28,9 @@ KeyManagement_::KeyManagement_() {
 // Key down single function
 void KeyManagement_::key_down_callback() {
     KeyManagement.start_time = SystemClock.getMillis();
+    Serial.print("Key down ");
+    Serial.print(KeyManagement.start_time);
+    Serial.println("ms");
 }
 
 // Key up functions
@@ -40,6 +45,7 @@ void KeyManagement_::up_key_callback() {
     else
         key = StopwatchState::UP_LONG;
 
+    Serial.println("UP up");
     Stopwatch.current_state->execute(key);
 
     // Start idle timer
@@ -57,6 +63,7 @@ void KeyManagement_::down_key_callback() {
     else
         key = StopwatchState::DOWN_LONG;
 
+    Serial.println("DOWN up");
     Stopwatch.current_state->execute(key);
 
     // Start idle timer
@@ -74,6 +81,7 @@ void KeyManagement_::select_key_callback() {
     else
         key = StopwatchState::SELECT_LONG;
 
+    Serial.println("SELECT up");
     Stopwatch.current_state->execute(key);
 
     // Start idle timer

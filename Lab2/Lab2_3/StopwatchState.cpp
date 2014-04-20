@@ -6,7 +6,7 @@ StopwatchState::StopwatchState(void (*state_action)()) {
     this->state_action = state_action;
 }
 
-void StopwatchState::setEventResponse(int key_event, StopwatchState* next_state, void (Stopwatch_::*Action)()) {
+void StopwatchState::setEventResponse(int key_event, StopwatchState* next_state, void (*Action)()) {
     responses[key_event].nextState = next_state;
     responses[key_event].Action = Action;
 }

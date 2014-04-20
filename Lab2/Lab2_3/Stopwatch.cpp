@@ -4,21 +4,31 @@
 #include "UserInterface.h"
 #include "SystemClock.h"
 
+Stopwatch_ Stopwatch;
+
+// Current time
+unsigned long Stopwatch_::current_time;
+
+// Stored times
+long Stopwatch_::times[TIMES_LENGTH];
+int Stopwatch_::times_count = 0;
+int Stopwatch_::next_available_index = 0;
+int Stopwatch_::viewing_index = 0;
+
+// Current bright
+int Stopwatch_::current_bright = 60;
+
+StopwatchState Stopwatch_::MAD = StopwatchState(MAD_state_action);
+StopwatchState Stopwatch_::MCA = StopwatchState(MCA_state_action);
+StopwatchState Stopwatch_::MCD = StopwatchState(MCD_state_action);
+StopwatchState Stopwatch_::MVT = StopwatchState(MVT_state_action);
+StopwatchState Stopwatch_::MP = StopwatchState(MP_state_action);
+
 Stopwatch_::Stopwatch_() {
-    MAD = StopwatchState(MAD_state_action);
-    MCA = StopwatchState(MCA_state_action);
-    MCD = StopwatchState(MCD_state_action);
-    MVT = StopwatchState(MVT_state_action);
-    MP = StopwatchState(MP_state_action);
-
-    next_available_index = 0;
-    times_count = 0;
-    viewing_index = 0;
-
     current_state = &MP;
 
     // MP State config
-    MP.setEventResponse(StopwatchState::UP, &MCA, (Stopwatch_::*) &start_from_last_time);
+    MP.setEventResponse(StopwatchState::UP, &MCA, start_from_last_time);
 
     MP.setEventResponse(StopwatchState::UP_LONG, &MCA, start_from_zero);
 
@@ -82,7 +92,7 @@ void Stopwatch_::MCD_state_action() {
 
 void Stopwatch_::MVT_state_action() {
     // Show 'current_viewing_time'
-    if(Stopwatch_::times_count == 0) {
+    if(times_count == 0) {
         // TODO: Display NO SAVED TIMES message
         Serial.println("MVT: No saved times");
     } else {

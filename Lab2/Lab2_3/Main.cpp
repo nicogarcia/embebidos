@@ -2,7 +2,9 @@
 #include "LCDKeypadKeys.h"
 #include "LCDKeypadDriver.h"
 #include "SoftwareSerial.h"
+#include "KeyManagement.h"
 #include "SystemClock.h"
+#include "Stopwatch.h"
 #include "Task.h"
 
 void print_time() {
@@ -24,12 +26,6 @@ void setup() {
 }
 
 void loop() {
-
-    //Serial.println(SystemClock.getMillis());
-
     // Check system clock events
     SystemClock.checkEvents();
-
-    // Check and execute if there were events triggered
-    //KeypadDriver.checkEvents();
 }
