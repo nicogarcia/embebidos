@@ -65,9 +65,8 @@ volatile int current_key = -1;
 volatile int callback_type = -1;
 volatile int key_involved = -1;
 
-// FIXME: Debouncing
+//  Debouncing
 void debouncing() {
-    //_delay_ms(50);
     ADCSRA |= 1<<ADSC;	// Start new ADC conversion
 }
 
@@ -101,6 +100,6 @@ void ADC_vect() {
 
     // Wait for timer to launch the next ADC conversion after
     // debouncing period
-    SystemClock.attach(Task(30, debouncing));
+    SystemClock.attach(Task(100, debouncing));
     //debouncing();
 }

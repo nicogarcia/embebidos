@@ -9,7 +9,7 @@
 KeyManagement_ KeyManagement;
 
 KeyManagement_::KeyManagement_() {
-    idle_time = 0;
+    idle = false;
     start_time = 0;
 
     const int key_count = 3;
@@ -28,25 +28,26 @@ KeyManagement_::KeyManagement_() {
 // Key down single function
 void KeyManagement_::key_down_callback() {
     KeyManagement.start_time = SystemClock.getMillis();
-    Serial.print("Key down ");
-    Serial.print(KeyManagement.start_time);
-    Serial.println("ms");
+    Serial.print("Key down | ");
+    KeyManagement.idle = false;
 }
 
 // Key up functions
 // Up
 void KeyManagement_::up_key_callback() {
     int key;
-    int time_since_key_down = SystemClock.getMillis() - KeyManagement.start_time;
+    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.start_time) / 1000;
 
     // Determine if key is UP or UP_LONG
-    if(time_since_key_down < LONG_PRESS_LENGHT)
+    if(time_since_key_down < LONG_PRESS_LENGHT) {
         key = StopwatchState::UP;
-    else
+        Serial.println("UP up");
+    } else {
         key = StopwatchState::UP_LONG;
+        Serial.println("UP_LONG up");
+    }
 
-    Serial.println("UP up");
-    Stopwatch.current_state->execute(key);
+    Stopwatch.getCurrentState()->execute(key);
 
     // Start idle timer
     idle_start();
@@ -55,16 +56,18 @@ void KeyManagement_::up_key_callback() {
 // Down
 void KeyManagement_::down_key_callback() {
     int key;
-    int time_since_key_down = SystemClock.getMillis() - KeyManagement.start_time;
+    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.start_time) / 1000;
 
     // Determine if key is DOWN or DOWN_LONG
-    if(time_since_key_down < LONG_PRESS_LENGHT)
+    if(time_since_key_down < LONG_PRESS_LENGHT) {
         key = StopwatchState::DOWN;
-    else
+        Serial.println("DOWN up");
+    } else {
         key = StopwatchState::DOWN_LONG;
+        Serial.println("DOWN_LONG up");
+    }
 
-    Serial.println("DOWN up");
-    Stopwatch.current_state->execute(key);
+    Stopwatch.getCurrentState()->execute(key);
 
     // Start idle timer
     idle_start();
@@ -73,28 +76,33 @@ void KeyManagement_::down_key_callback() {
 // Select
 void KeyManagement_::select_key_callback() {
     int key;
-    int time_since_key_down = SystemClock.getMillis() - KeyManagement.start_time;
+    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.start_time) / 1000;
 
     // Determine if key is SELECT or SELECT_LONG
-    if(time_since_key_down < LONG_PRESS_LENGHT)
+    if(time_since_key_down < LONG_PRESS_LENGHT) {
         key = StopwatchState::SELECT;
-    else
+        Serial.println("SELECT up");
+    } else {
         key = StopwatchState::SELECT_LONG;
+        Serial.println("SELECT_LONG up");
+    }
 
-    Serial.println("SELECT up");
-    Stopwatch.current_state->execute(key);
+    Stopwatch.getCurrentState()->execute(key);
 
     // Start idle timer
     idle_start();
 }
 
 void KeyManagement_::idle_start() {
-    KeyManagement.idle_time = SystemClock.getMillis();
-    // FIXME:  Update: SystemClock.attach(idle_callback);
+    // Set idle state as true, if there's a keydown this flag will be unset
+    KeyManagement.idle = true;
+    // Schedule task to be launched after IDLE_TIME_MS passed to run idle routines
+    SystemClock.attach(Task(IDLE_TIME_MS, idle_callback));
 }
 
 // Idle function callback
 void KeyManagement_::idle_callback() {
-    // If this callback is running then system is idle
-    Stopwatch.current_state->execute(StopwatchState::NONE);
+    // If system is still idle (no keydown event triggered)
+    if(KeyManagement.idle)
+        Stopwatch.getCurrentState()->execute(StopwatchState::NONE);
 }

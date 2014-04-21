@@ -14,9 +14,9 @@ void StopwatchState::setEventResponse(int key_event, StopwatchState* next_state,
 // Executes its Response to the key_event
 void StopwatchState::execute(int key_event) {
     // FIXME: Not optimal way to check that responses[key_event] is not initialized
-    if(responses[key_event].nextState == NULL) {
-        if((responses[key_event].Action) != NULL)
-            (responses[key_event].Action)();
-        Stopwatch.current_state = responses[key_event].nextState;
+    if(responses[key_event].nextState != NULL) {
+        if(responses[key_event].Action != NULL)
+            responses[key_event].Action();
+        Stopwatch.setCurrentState(responses[key_event].nextState);
     }
 }

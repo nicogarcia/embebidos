@@ -19,23 +19,25 @@ public:
         DOWN_LONG = 5,
         NONE = 6
     };
+
+    void RunStateAction() {
+        state_action();
+    }
 private:
     class Response {
     public:
         Response() {
             nextState = NULL;
         }
-        Response(StopwatchState* ns, void (*action)()): nextState(ns), Action(action) {}
         StopwatchState* nextState;
         void (*Action)();
     };
 
     void (*state_action)();
-    static const int CALLBACK_TYPE_COUNT = 3;
+    static const int CALLBACK_TYPE_COUNT = 7;
 
     // Store next state and callbacks for each state, simple and long keypress
-    Response responses[CALLBACK_TYPE_COUNT * 2];
-
+    Response responses[CALLBACK_TYPE_COUNT];
 };
 
 

@@ -4,10 +4,13 @@
 #include "UserInterface.h"
 #include "SystemClock.h"
 
-Stopwatch_ Stopwatch;
-
 // Current time
-unsigned long Stopwatch_::current_time;
+unsigned long Stopwatch_::current_time = 0;
+
+// Time when counting started
+unsigned long Stopwatch_::start_time;
+// Start time of mcd state
+unsigned long Stopwatch_::mcd_initial_time;
 
 // Stored times
 long Stopwatch_::times[TIMES_LENGTH];
@@ -24,8 +27,12 @@ StopwatchState Stopwatch_::MCD = StopwatchState(MCD_state_action);
 StopwatchState Stopwatch_::MVT = StopwatchState(MVT_state_action);
 StopwatchState Stopwatch_::MP = StopwatchState(MP_state_action);
 
+// Global Stopwatch "instance"
+Stopwatch_ Stopwatch = Stopwatch_();
+
 Stopwatch_::Stopwatch_() {
     current_state = &MP;
+    last_state = NULL;
 
     // MP State config
     MP.setEventResponse(StopwatchState::UP, &MCA, start_from_last_time);
@@ -66,44 +73,43 @@ Stopwatch_::Stopwatch_() {
 
     // MAD Idle time transition
     MAD.setEventResponse(StopwatchState::NONE, &MP, NULL);
-
 }
 
 // Stopwatch stops refreshing
 void Stopwatch_::MP_state_action() {
-    // TODO: Show current time
-    Serial.print("PAUSE MODE: ");
-    UserInterface.printTime(SystemClock.getMillis() / 10);
+    //  Show current time
+    UserInterface.printModeAndTime(MODE_PAUSE, current_time);
 }
 
 void Stopwatch_::MCA_state_action() {
-    // TODO: Get current Stopwatch time
-    // TODO: Show current time
-    Serial.print("MCA MODE: ");
-    UserInterface.printTime(SystemClock.getMillis() / 10);
+    // Get current Stopwatch time
+    current_time = SystemClock.getMillis() - start_time;
+    //  Show current time
+    UserInterface.printModeAndTime(MODE_MCA, current_time);
 }
 
 void Stopwatch_::MCD_state_action() {
-    // TODO: Get current Stopwatch time
-    // TODO: Show current time
-    Serial.print("MCD MODE: ");
-    UserInterface.printTime(SystemClock.getMillis() / 10);
+    // Get current Stopwatch time
+    current_time = mcd_initial_time - (SystemClock.getMillis() - start_time);
+    // Show current time
+    UserInterface.printModeAndTime(MODE_MCD, current_time);
 }
 
 void Stopwatch_::MVT_state_action() {
     // Show 'current_viewing_time'
     if(times_count == 0) {
         // TODO: Display NO SAVED TIMES message
-        Serial.println("MVT: No saved times");
+        UserInterface.printNoSavedTimes();
     } else {
         // TODO: Display viewing index
-        UserInterface.printTime(times[viewing_index]);
+        UserInterface.printModeAndTime(MODE_MVT, times[viewing_index]);
     }
 }
 
 void Stopwatch_::MAD_state_action() {
-    // TODO: Show current time
-    // TODO: Show current bright
+    // TODO: Show current time?
+    // Show current bright
+    UserInterface.printBright(current_bright);
 }
 
 // Load last time as current time
@@ -111,16 +117,24 @@ void Stopwatch_::start_from_last_time() {
     if(times_count == 0) {
         // TODO: Display NO SAVED TIMES message
         Serial.println("Cannot continue from last saved time. No saved times.");
-    } else
+    } else {
+        start_time = SystemClock.getMillis();
         current_time = times[(next_available_index - 1) % times_count];
+    }
 }
 
 void Stopwatch_::start_from_zero() {
+    Serial.println("Starting from zero...");
+    start_time = SystemClock.getMillis();
     current_time = 0;
 }
 
 void Stopwatch_::start_from_max_time() {
-    current_time = 594158;
+    Serial.println("Starting from max time...");
+    start_time = SystemClock.getMillis();
+    // FIXME: Get this max out!
+    mcd_initial_time = 5999999;
+    current_time = 0;
 }
 
 void Stopwatch_::reset_viewing_time() {
@@ -135,10 +149,11 @@ void Stopwatch_::store_current_time() {
     next_available_index = (next_available_index + 1) % TIMES_LENGTH;
 
     // Increase times count if not full
-    times_count = min(times_count, TIMES_LENGTH);
+    times_count = min(times_count + 1, TIMES_LENGTH);
 
     // TODO: Show message ? How ?
-    Serial.println("Time saved OK!");
+    Serial.print("Time saved OK! => ");
+    UserInterface.printTime(current_time);
 }
 
 // Increase current viewing time pointer
@@ -171,4 +186,13 @@ void Stopwatch_::increase_lcd_bright() {
 void Stopwatch_::decrease_lcd_bright() {
     current_bright = max(0, current_bright - 20);
     // TODO: Decrease lcd bright
+}
+
+void Stopwatch_::setCurrentState( StopwatchState* new_state ) {
+    last_state = current_state;
+    current_state = new_state;
+}
+
+StopwatchState* Stopwatch_::getCurrentState() {
+    return current_state;
 }

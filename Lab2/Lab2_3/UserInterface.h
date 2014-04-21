@@ -3,7 +3,13 @@
 
 class UserInterface_ {
 public:
+    void printModeAndTime(int mode, unsigned long time);
+
     void printTime(unsigned long time);
+
+    void printBright(int bright);
+
+    void printNoSavedTimes();
 private:
 
 };

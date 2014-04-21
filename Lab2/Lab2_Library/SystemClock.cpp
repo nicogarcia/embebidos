@@ -111,9 +111,6 @@ void TIMER2_COMPA_vect() {
                 //delete the task
                 SystemClock.deleteTask(i);
             }
-            // FIXME: Is flag necessary? Could it be done with Queue.size?
-            //if (!SystemClock.ReadyTasksQueue.isEmpty())
-            //    SystemClock.event_flag = true;
         }
     }
 }

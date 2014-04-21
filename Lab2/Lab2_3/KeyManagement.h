@@ -7,10 +7,13 @@ public:
     KeyManagement_();
 private:
     // Long press length in seconds
-    static const int LONG_PRESS_LENGHT = 3;
+    static const int LONG_PRESS_LENGHT = 1;
 
     // Idle time
-    unsigned long idle_time;
+    static const int IDLE_TIME_MS = 5000;
+
+    // Idle state flag
+    bool idle;
 
     // Start time
     unsigned long start_time;

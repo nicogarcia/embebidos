@@ -109,6 +109,7 @@
   <avrgcccpp.compiler.symbols.DefSymbols>
     <ListValues>
       <Value>DEBUG</Value>
+      <Value>F_CPU=16000000</Value>
     </ListValues>
   </avrgcccpp.compiler.symbols.DefSymbols>
   <avrgcccpp.compiler.directories.IncludePaths>
@@ -162,11 +163,29 @@
     <Compile Include="SystemClock.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="SystemQueue.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SystemQueue.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Task.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Task.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="docs\decisions.txt">
+      <SubType>compile</SubType>
+    </None>
     <None Include="libcoreArduinoUno104.a">
       <SubType>compile</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="docs" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

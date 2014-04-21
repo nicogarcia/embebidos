@@ -6,18 +6,33 @@
 class Stopwatch_ {
 public:
     Stopwatch_();
-    StopwatchState* current_state;
-    void start();
+    StopwatchState* last_state;
 
-private:
-    // Max time
-    static const unsigned long MAX_TIME = 594158;
+    void setCurrentState(StopwatchState* new_state);
+    StopwatchState* getCurrentState();
+
+    enum Mode {
+        MODE_PAUSE = 0,
+        MODE_MCA,
+        MODE_MCD,
+        MODE_MAD,
+        MODE_MVT
+    };
 
     // States
     static StopwatchState MCA, MCD, MP, MVT, MAD;
+private:
+    StopwatchState* current_state;
+    // Max time
+    static const unsigned long MAX_TIME = 594158;
 
     // Current time
     static unsigned long current_time;
+
+    // Time when descending counting started
+    static unsigned long start_time;
+    // Start time of mcd state
+    static unsigned long mcd_initial_time;
 
     // Stored times
     static const int TIMES_LENGTH = 10;
