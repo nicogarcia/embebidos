@@ -1,5 +1,6 @@
 #ifndef USERINTERFACE_H_
 #define USERINTERFACE_H_
+#include "LiquidCrystal.h"
 
 class UserInterface_ {
 public:
@@ -10,7 +11,8 @@ public:
     void printBright(int bright);
 
     void printNoSavedTimes();
-private:
+    void printTimeLCD(unsigned long time);
+    static LiquidCrystal lcd;
 
 };
 extern UserInterface_ UserInterface;

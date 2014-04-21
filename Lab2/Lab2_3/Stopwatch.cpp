@@ -181,11 +181,13 @@ void Stopwatch_::show_previous_stored_time() {
 void Stopwatch_::increase_lcd_bright() {
     current_bright = min(100, current_bright + 20);
     // TODO: Increase lcd bright
+    analogWrite(10, current_bright);
 }
 
 void Stopwatch_::decrease_lcd_bright() {
     current_bright = max(0, current_bright - 20);
     // TODO: Decrease lcd bright
+    analogWrite(10, current_bright);
 }
 
 void Stopwatch_::setCurrentState( StopwatchState* new_state ) {
