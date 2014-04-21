@@ -1,7 +1,22 @@
-
 // Sketch!
 
 Single "instance" objects are constructed like Serial
 
 class Serial_ { };
 extern Serial_ Serial;
+
+
+SystemClock -> why? To do actions in a specific time.
+                Can manage more than one task.
+                A Queue with the functions to do.
+                An array to save the tasks to do.
+                Implementation for a task ---> start time, time.
+                
+Problems with the constructor in Stopwatch
+
+Stopwatch states-> Implementation.
+                   How they work.
+                   
+                   
+Simulation with another arduino (conections).
+
