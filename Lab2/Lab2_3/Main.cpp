@@ -15,7 +15,7 @@ void setup() {
     DDRB |= (1<<DDB5);
 
     Serial.begin(115200);
-    Serial.print("Lab2_3 Start!!\n");
+    //Serial.print("Lab2_3 Start!!\n");
 
     //  Update current mode screen
     lcd_ui.updateUI();

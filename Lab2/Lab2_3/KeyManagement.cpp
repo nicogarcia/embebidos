@@ -120,7 +120,9 @@ void KeyManagement_::idle_callback() {
     unsigned long idle_time = SystemClock.getMillis() - KeyManagement.start_time;
 
     // If system is still idle and time is longer than idle lenght, then take idle-state actions
-    if(KeyManagement.idle && (idle_time >= (long) IDLE_TIME_MS)) {
+    if(KeyManagement.idle && (idle_time >= (long) IDLE_TIME_MS) &&
+            (Stopwatch.getCurrentStatePointer() == Stopwatch.STATE_MAD)) {
+
         Stopwatch.getCurrentState()->execute(StopwatchState::NONE);
         //  Update current mode screen
         lcd_ui.updateUI();

@@ -6,7 +6,6 @@
 class Stopwatch_ {
 public:
     Stopwatch_();
-    int last_state_pointer;
 
     void setCurrentState(int new_state);
     StopwatchState* getCurrentState();
@@ -20,7 +19,7 @@ public:
         STATE_MCD = 2,
         STATE_MVT = 3,
         STATE_MAD = 4,
-        STATE_BEFORE_LAUNCH = 5
+        STATE_INIT = 5
     };
 
     // Current time
@@ -61,6 +60,7 @@ private:
     static void MCD_state_action();
     static void MVT_state_action();
     static void MAD_state_action();
+    static void INIT_state_action();
 
     // Transition functions
     static void start_from_last_time();

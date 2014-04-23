@@ -2,6 +2,8 @@
 #define LCDUI_H_
 #include "LiquidCrystal.h"
 #include "StopwatchState.h"
+#include "SystemClock.h"
+#include "Task.h"
 
 class LCDUI {
 public:
@@ -11,6 +13,10 @@ public:
     static LiquidCrystal screen;
 
     static void initScreen();
+
+    void show_no_saved_message();
+
+    void show_saved_time_message(unsigned long save);
 private:
     // Time structure and function
     typedef struct {
@@ -20,7 +26,10 @@ private:
     } UI_Time;
     static UI_Time ms_to_time(unsigned long time_ms);
 
-    static const int MODES_COUNT = 5;
+    static const int MODES_COUNT = 6;
+
+    //Function to print a msg
+    static void (*print_message)() ;
 
     // Store mode indication phrase
     static const char* MODE_NAMES[MODES_COUNT];
@@ -33,7 +42,10 @@ private:
 
     // LCD 16x2 display will be divided in two lines of 14x1
     // and a 2x2 square for key states
-    static const int LINE_LENGHT = 14;
+    static const int LINE_LENGHT = 16;
+
+    //Time saved to show
+    static unsigned long time_saved;
 
     // LCD Lines, define with space for null terminating char
     static char first_line[LINE_LENGHT + 1];
@@ -67,11 +79,17 @@ private:
     static void MCD_buildSecondLine();
     static void MVT_buildSecondLine();
     static void MAD_buildSecondLine();
+    static void INIT_buildSecondLine();
 
     // Utilities
     static void my_strcpy(const char* source, char* destiny);
     static void clear_line(char* source);
     static void printTime(UI_Time time, char* destiny, int position);
+    static void empty_function() {};
+    static void print_no_save();
+    static void print_saved_time();
+    //To stop printing message
+    static void stop_printing();
 
     // Special characters
     static const int UP_ARROW_FILLED_CHAR = 0;

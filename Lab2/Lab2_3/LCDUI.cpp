@@ -6,6 +6,9 @@
 
 // LCDUI instance
 LCDUI lcd_ui;
+//Function to print a msg
+void (*LCDUI::print_message)() ;
+unsigned long LCDUI::time_saved;
 
 char LCDUI::first_line[LINE_LENGHT + 1];
 char LCDUI::second_line[LINE_LENGHT + 1];
@@ -63,7 +66,8 @@ const char* LCDUI::MODE_NAMES[MODES_COUNT] = {
     "  CRONOMETRO",
     " TEMPORIZADOR",
     "   REGISTRO",
-    "    BRILLO"
+    "    BRILLO",
+    "EMBEBIDOS LAB 2 "
 };
 
 LCDUI::LCDUI() {
@@ -85,12 +89,16 @@ LCDUI::LCDUI() {
     second_line_builders[Stopwatch.STATE_MCD] = MCD_buildSecondLine;
     second_line_builders[Stopwatch.STATE_MVT] = MVT_buildSecondLine;
     second_line_builders[Stopwatch.STATE_MAD] = MAD_buildSecondLine;
+    second_line_builders[Stopwatch.STATE_INIT] = INIT_buildSecondLine;
+    //print message function starts empty
+    print_message = empty_function;
 }
 
 void LCDUI::updateUI() {
     printFirstLine();
     printSecondLine();
     printKeyState();
+    print_message();
 
     // LCDPrint();
     SerialPrint();
@@ -121,14 +129,11 @@ void LCDUI::LCDPrint() {
 
 void LCDUI::SerialPrint() {
     // Print first line through Serial
-    Serial.print(first_line);
-    Serial.print(key_state_serial[UI_KEY_POSITION_UP]);
-    Serial.println(key_state_serial[UI_KEY_POSITION_SELECT]);
+    Serial.println(first_line);
 
     // Print second line through Serial
-    Serial.print(second_line);
-    Serial.print(key_state_serial[UI_KEY_POSITION_DOWN]);
-    Serial.println(key_state_serial[UI_KEY_POSITION_LONG]);
+    Serial.println(second_line);
+
 
 }
 
@@ -210,7 +215,7 @@ void LCDUI::MCD_buildSecondLine() {
 void LCDUI::MVT_buildSecondLine() {
     unsigned long int time = Stopwatch.times[Stopwatch.viewing_index];
     if(Stopwatch.times_count == 0)
-        ;// TODO: PRINT MESSAGE
+        my_strcpy("    Vacio      ",second_line);
     else
         printTime(ms_to_time(time), second_line, 4);
 }
@@ -218,8 +223,9 @@ void LCDUI::MVT_buildSecondLine() {
 void LCDUI::MAD_buildSecondLine() {
     int pos = 5;
     bool is_100 = Stopwatch.current_bright / 100;
+    bool is_0 = Stopwatch.current_bright == 0;
     second_line[pos++] = is_100 ? '1' : ' ';
-    second_line[pos++] = int_to_char_num((Stopwatch.current_bright % 100) / 10);
+    second_line[pos++] = is_0 ? ' ': int_to_char_num((Stopwatch.current_bright % 100) / 10);
     second_line[pos++] = int_to_char_num(Stopwatch.current_bright % 10);
     second_line[pos++] = '%';
 }
@@ -245,5 +251,36 @@ void LCDUI::initScreen() {
 
 void LCDUI::printKeyState() {
 
+}
+
+void LCDUI::print_no_save() {
+    my_strcpy(" NO HAY TIEMPOS ",first_line);
+    my_strcpy("   GUARDADOS    ",second_line);
+
+}
+
+void LCDUI::print_saved_time() {
+    clear_line(second_line);
+    printTime(ms_to_time(time_saved),second_line,4);
+    my_strcpy("TIEMPO GUARDADO ",first_line);
+}
+
+void LCDUI::show_no_saved_message() {
+    print_message = print_no_save;
+    SystemClock.attach(Task(1000,stop_printing));
+}
+
+void LCDUI::show_saved_time_message(unsigned long time) {
+    print_message = print_saved_time;
+    time_saved = time;
+    SystemClock.attach(Task(1000,stop_printing));
+}
+
+void LCDUI::stop_printing() {
+    print_message = empty_function;
+}
+
+void LCDUI::INIT_buildSecondLine() {
+    my_strcpy(" 1er Cuat COM10 ",second_line);
 }
 

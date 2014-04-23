@@ -28,15 +28,16 @@ StopwatchState Stopwatch_::states[] = {
     StopwatchState(MCA_state_action),
     StopwatchState(MCD_state_action),
     StopwatchState(MVT_state_action),
-    StopwatchState(MAD_state_action)
+    StopwatchState(MAD_state_action),
+    StopwatchState(INIT_state_action)
 };
 
 // Global Stopwatch "instance"
 Stopwatch_ Stopwatch = Stopwatch_();
 
 Stopwatch_::Stopwatch_() {
-    current_state_pointer = STATE_MP;
-    last_state_pointer = STATE_BEFORE_LAUNCH;
+    //TODO INIT_STATE
+    current_state_pointer = STATE_INIT;
 
     // MP State config
     states[STATE_MP].setEventResponse(StopwatchState::UP, STATE_MCA, start_from_last_time);
@@ -77,6 +78,19 @@ Stopwatch_::Stopwatch_() {
 
     // MAD Idle time transition
     states[STATE_MAD].setEventResponse(StopwatchState::NONE, STATE_MP, NULL);
+
+    //INIT state config
+    states[STATE_INIT].setEventResponse(StopwatchState::UP, STATE_MP, NULL);
+
+    states[STATE_INIT].setEventResponse(StopwatchState::UP_LONG, STATE_MP, NULL);
+
+    states[STATE_INIT].setEventResponse(StopwatchState::DOWN, STATE_MP, NULL);
+
+    states[STATE_INIT].setEventResponse(StopwatchState::DOWN_LONG, STATE_MP, NULL);
+
+    states[STATE_INIT].setEventResponse(StopwatchState::SELECT, STATE_MP, NULL);
+
+    states[STATE_INIT].setEventResponse(StopwatchState::SELECT_LONG, STATE_MP, NULL);
 }
 
 // Stopwatch stops refreshing
@@ -85,14 +99,17 @@ void Stopwatch_::MP_state_action() {
 
 void Stopwatch_::MCA_state_action() {
     // Get current Stopwatch time
-    current_time = mca_initial_time + SystemClock.getMillis() - start_time;
+    current_time = (mca_initial_time + SystemClock.getMillis() - start_time) % STOPWATCH_MAX_TIME;
     //  Update current mode screen
     lcd_ui.updateUI();
 }
 
 void Stopwatch_::MCD_state_action() {
     // Get current Stopwatch time
-    current_time = mcd_initial_time - (SystemClock.getMillis() - start_time);
+    current_time = (mcd_initial_time - (SystemClock.getMillis() - start_time));
+    // Turn over to max (when there's overflow)
+    if (current_time > STOPWATCH_MAX_TIME)
+        mcd_initial_time = STOPWATCH_MAX_TIME;
     //  Update current mode screen
     lcd_ui.updateUI();
 }
@@ -101,6 +118,9 @@ void Stopwatch_::MVT_state_action() {
 }
 
 void Stopwatch_::MAD_state_action() {
+}
+
+void Stopwatch_::INIT_state_action() {
 }
 
 // Load last time as current time
@@ -114,6 +134,8 @@ void Stopwatch_::start_from_last_time() {
         mcd_initial_time = STOPWATCH_MAX_TIME;
         // TODO: Show message?
         Serial.println("Cannot continue from last saved time. No saved times.");
+        lcd_ui.show_no_saved_message();
+        lcd_ui.updateUI();
     } else {
         mcd_initial_time = times[(next_available_index - 1) % TIMES_LENGTH];
         mca_initial_time = mcd_initial_time;
@@ -148,6 +170,9 @@ void Stopwatch_::store_current_time() {
 
     // TODO: Show message in UI? How ?
     Serial.print("Time saved OK!");
+
+    lcd_ui.show_saved_time_message(current_time);
+    lcd_ui.updateUI();
 }
 
 // Increase current viewing time pointer
@@ -188,7 +213,6 @@ void Stopwatch_::decrease_lcd_bright() {
 }
 
 void Stopwatch_::setCurrentState( int new_state) {
-    last_state_pointer = current_state_pointer;
     current_state_pointer = new_state;
 }
 
