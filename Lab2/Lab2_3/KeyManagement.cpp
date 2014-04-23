@@ -106,14 +106,23 @@ void KeyManagement_::select_key_callback() {
 void KeyManagement_::idle_start() {
     // Set idle state as true, if there's a keydown this flag will be unset
     KeyManagement.idle = true;
+
+    // Store the latest time that idle period started to check its lenght
+    KeyManagement.idle_start_time = SystemClock.getMillis();
+
     // Schedule task to be launched after IDLE_TIME_MS passed to run idle routines
     SystemClock.attach(Task(IDLE_TIME_MS, idle_callback));
 }
 
 // Idle function callback
 void KeyManagement_::idle_callback() {
-    // FIXME: BUG! This is always triggered
-    // If system is still idle (no keydown event triggered)
-    if(KeyManagement.idle)
+    // Get idle time period
+    unsigned long idle_time = SystemClock.getMillis() - KeyManagement.start_time;
+
+    // If system is still idle and time is longer than idle lenght, then take idle-state actions
+    if(KeyManagement.idle && (idle_time >= (long) IDLE_TIME_MS)) {
         Stopwatch.getCurrentState()->execute(StopwatchState::NONE);
+        //  Update current mode screen
+        lcd_ui.updateUI();
+    }
 }

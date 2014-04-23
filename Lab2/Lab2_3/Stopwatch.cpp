@@ -9,8 +9,10 @@ unsigned long Stopwatch_::current_time = 0;
 
 // Time when counting started
 unsigned long Stopwatch_::start_time;
-// Start time of mcd state
-unsigned long Stopwatch_::mcd_initial_time;
+// Initial time of mca state
+unsigned long Stopwatch_::mca_initial_time = 0;
+// Initial time of mcd state
+unsigned long Stopwatch_::mcd_initial_time = Stopwatch_::STOPWATCH_MAX_TIME;
 
 // Stored times
 long Stopwatch_::times[TIMES_LENGTH];
@@ -79,12 +81,11 @@ Stopwatch_::Stopwatch_() {
 
 // Stopwatch stops refreshing
 void Stopwatch_::MP_state_action() {
-    // Empty on puropse
 }
 
 void Stopwatch_::MCA_state_action() {
     // Get current Stopwatch time
-    current_time = SystemClock.getMillis() - start_time;
+    current_time = mca_initial_time + SystemClock.getMillis() - start_time;
     //  Update current mode screen
     lcd_ui.updateUI();
 }
@@ -97,27 +98,31 @@ void Stopwatch_::MCD_state_action() {
 }
 
 void Stopwatch_::MVT_state_action() {
-    // FIXME: TAKE THIS IN ACCOUNT! => if(times_count == 0)
 }
 
 void Stopwatch_::MAD_state_action() {
-    // TODO: Show current time?
-    // Show current bright
 }
 
 // Load last time as current time
 void Stopwatch_::start_from_last_time() {
+    // Set start time to calculate time differences
+    start_time = SystemClock.getMillis();
+
+    // If there are stored times, load the latest, else start from default
     if(times_count == 0) {
-        // TODO: Display NO SAVED TIMES message
+        mca_initial_time = 0;
+        mcd_initial_time = STOPWATCH_MAX_TIME;
+        // TODO: Show message?
         Serial.println("Cannot continue from last saved time. No saved times.");
     } else {
-        start_time = SystemClock.getMillis();
-        current_time = times[(next_available_index - 1) % times_count];
+        mcd_initial_time = times[(next_available_index - 1) % TIMES_LENGTH];
+        mca_initial_time = mcd_initial_time;
     }
 }
 
 void Stopwatch_::start_from_zero() {
     start_time = SystemClock.getMillis();
+    mca_initial_time = 0;
     current_time = 0;
 }
 
@@ -141,8 +146,8 @@ void Stopwatch_::store_current_time() {
     // Increase times count if not full
     times_count = min(times_count + 1, TIMES_LENGTH);
 
-    // TODO: Show message ? How ?
-    Serial.print("Time saved OK! => ");
+    // TODO: Show message in UI? How ?
+    Serial.print("Time saved OK!");
 }
 
 // Increase current viewing time pointer
@@ -151,6 +156,7 @@ void Stopwatch_::show_next_stored_time() {
     if((viewing_index + 1) % times_count == next_available_index)
         return;
 
+    // Increase viewing pointer
     viewing_index = (viewing_index + 1) % times_count;
 }
 
@@ -168,14 +174,16 @@ void Stopwatch_::show_previous_stored_time() {
 }
 
 void Stopwatch_::increase_lcd_bright() {
-    current_bright = min(100, current_bright + 20);
     // Increase lcd bright
+    current_bright = min(100, current_bright + 20);
+    // Set lcd bright
     analogWrite(10, current_bright);
 }
 
 void Stopwatch_::decrease_lcd_bright() {
-    current_bright = max(0, current_bright - 20);
     // Decrease lcd bright
+    current_bright = max(0, current_bright - 20);
+    // Set lcd bright
     analogWrite(10, current_bright);
 }
 

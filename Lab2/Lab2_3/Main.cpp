@@ -8,22 +8,8 @@
 #include "Task.h"
 #include "LCDUI.h"
 
-// TODO: Should this be here?
-// these constants won't change.  But you can change the size of
-// your LCD using them:
-const int numRows = 2;
-const int numCols = 16;
-
-void init_lcd() {
-    pinMode(10, OUTPUT);
-    // set up the LCD's number of columns and rows:
-    LCDUI::screen.begin(numCols,numRows);
-
-    analogWrite(10, 80); //Controla intensidad backlight
-}
-
 void setup() {
-    init_lcd();
+    LCDUI::initScreen();
 
     //Inicializar el pin del led como salida
     DDRB |= (1<<DDB5);

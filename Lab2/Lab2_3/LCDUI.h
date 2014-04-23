@@ -9,6 +9,8 @@ public:
     void updateUI();
 
     static LiquidCrystal screen;
+
+    static void initScreen();
 private:
     // Time structure and function
     typedef struct {
@@ -44,25 +46,21 @@ private:
         UI_KEY_POSITION_DOWN = 2,
         UI_KEY_POSITION_LONG = 3
     };
-    char key_state[4];
-    /*
-    // Key states
-    enum UIKeys {
-        UIKEY_SELECT = 0,
-        UIKEY_DOWN = 1,
-        UIKEY_UP = 2
-    };
-    int key_states[3];
-    bool
-    */
+    char key_state_serial[4];
+    char key_state_lcd[4];
+
+    // Printing methods
     void printFirstLine();
     void printSecondLine();
     void printKeyState();
     void LCDPrint();
     void SerialPrint();
 
+    // Line builders
+    // Common builder for first line
     void buildFirstLine();
 
+    // Second line builders, one for each state
     void (*second_line_builders[MODES_COUNT])();
     static void MP_buildSecondLine();
     static void MCA_buildSecondLine();
@@ -74,8 +72,17 @@ private:
     static void my_strcpy(const char* source, char* destiny);
     static void clear_line(char* source);
     static void printTime(UI_Time time, char* destiny, int position);
-    //
-    // TODO: Special characters
+
+    // Special characters
+    static const int UP_ARROW_FILLED_CHAR = 0;
+    static const int UP_ARROW_BORDERS_CHAR = 1;
+    static const int DOWN_ARROW_FILLED_CHAR = 2;
+    static const int DOWN_ARROW_BORDERS_CHAR = 3;
+    // Special characters data
+    static byte UP_ARROW_FILLED_DATA[8];
+    static byte DOWN_ARROW_FILLED_DATA[8];
+    static byte UP_ARROW_BORDERS_DATA[8];
+    static byte DOWN_ARROW_BORDERS_DATA[8];
 
 };
 extern LCDUI lcd_ui;

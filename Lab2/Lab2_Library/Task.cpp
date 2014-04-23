@@ -1,6 +1,5 @@
 #include "Task.h"
 
-
 Task::Task() {
     time = 0;
     callback = NULL;

@@ -10,6 +10,51 @@ LCDUI lcd_ui;
 char LCDUI::first_line[LINE_LENGHT + 1];
 char LCDUI::second_line[LINE_LENGHT + 1];
 
+byte LCDUI::UP_ARROW_FILLED_DATA[8] = {
+    B00000,
+    B00000,
+    B00100,
+    B01110,
+    B11111,
+    B11111,
+    B00000,
+    B00000,
+};
+
+byte LCDUI::DOWN_ARROW_FILLED_DATA[8] = {
+    B00000,
+    B00000,
+    B11111,
+    B11111,
+    B01110,
+    B00100,
+    B00000,
+    B00000,
+};
+
+byte LCDUI::UP_ARROW_BORDERS_DATA[8] = {
+    B00000,
+    B00000,
+    B00100,
+    B01010,
+    B10001,
+    B11111,
+    B00000,
+    B00000,
+};
+
+byte LCDUI::DOWN_ARROW_BORDERS_DATA[8] = {
+    B00000,
+    B00000,
+    B11111,
+    B10001,
+    B01010,
+    B00100,
+    B00000,
+    B00000,
+};
+
+
 // initialize the library with the numbers of the interface pins
 LiquidCrystal LCDUI::screen = LiquidCrystal(8, 9, 4, 5, 6, 7);
 
@@ -26,7 +71,12 @@ LCDUI::LCDUI() {
     second_line[LINE_LENGHT] = 0;
 
     for(int i = 0; i < 4; i++)
-        key_state[i] = ' ';
+        key_state_serial[i] = ' ';
+
+    key_state_lcd[UI_KEY_POSITION_UP] = UP_ARROW_BORDERS_CHAR;
+    key_state_lcd[UI_KEY_POSITION_DOWN] = DOWN_ARROW_BORDERS_CHAR;
+    key_state_lcd[UI_KEY_POSITION_SELECT] = ' ';
+    key_state_lcd[UI_KEY_POSITION_LONG] = ' ';
 
     latest_time = 0;
 
@@ -38,11 +88,9 @@ LCDUI::LCDUI() {
 }
 
 void LCDUI::updateUI() {
-    // TODO: Update if necessary
-
     printFirstLine();
     printSecondLine();
-    //printKeyState();
+    printKeyState();
 
     // LCDPrint();
     SerialPrint();
@@ -60,27 +108,27 @@ void LCDUI::LCDPrint() {
     // Actually print key states
     // Print up and select key states
     screen.setCursor(LINE_LENGHT, 0);
-    screen.print(key_state[UI_KEY_POSITION_UP]);
+    screen.print(key_state_lcd[UI_KEY_POSITION_UP]);
     screen.setCursor(LINE_LENGHT + 1, 0);
-    screen.print(key_state[UI_KEY_POSITION_SELECT]);
+    screen.print(key_state_lcd[UI_KEY_POSITION_SELECT]);
 
     // Print down and long key states
     screen.setCursor(LINE_LENGHT, 1);
-    screen.print(key_state[UI_KEY_POSITION_DOWN]);
+    screen.print(key_state_lcd[UI_KEY_POSITION_DOWN]);
     screen.setCursor(LINE_LENGHT + 1, 1);
-    screen.print(key_state[UI_KEY_POSITION_LONG]);
+    screen.print(key_state_lcd[UI_KEY_POSITION_LONG]);
 }
 
 void LCDUI::SerialPrint() {
     // Print first line through Serial
     Serial.print(first_line);
-    Serial.print(key_state[UI_KEY_POSITION_UP]);
-    Serial.println(key_state[UI_KEY_POSITION_SELECT]);
+    Serial.print(key_state_serial[UI_KEY_POSITION_UP]);
+    Serial.println(key_state_serial[UI_KEY_POSITION_SELECT]);
 
     // Print second line through Serial
     Serial.print(second_line);
-    Serial.print(key_state[UI_KEY_POSITION_DOWN]);
-    Serial.println(key_state[UI_KEY_POSITION_LONG]);
+    Serial.print(key_state_serial[UI_KEY_POSITION_DOWN]);
+    Serial.println(key_state_serial[UI_KEY_POSITION_LONG]);
 
 }
 
@@ -95,6 +143,7 @@ LCDUI::UI_Time LCDUI::ms_to_time(unsigned long time_ms) {
 void LCDUI::my_strcpy(const char* source, char* destiny) {
     while((*destiny++ = *source++));
 }
+
 void LCDUI::clear_line(char* source) {
     for(int i = 0; i < LINE_LENGHT; i++)
         *(source + i) = ' ';
@@ -159,7 +208,11 @@ void LCDUI::MCD_buildSecondLine() {
 }
 
 void LCDUI::MVT_buildSecondLine() {
-
+    unsigned long int time = Stopwatch.times[Stopwatch.viewing_index];
+    if(Stopwatch.times_count == 0)
+        ;// TODO: PRINT MESSAGE
+    else
+        printTime(ms_to_time(time), second_line, 4);
 }
 
 void LCDUI::MAD_buildSecondLine() {
@@ -169,5 +222,28 @@ void LCDUI::MAD_buildSecondLine() {
     second_line[pos++] = int_to_char_num((Stopwatch.current_bright % 100) / 10);
     second_line[pos++] = int_to_char_num(Stopwatch.current_bright % 10);
     second_line[pos++] = '%';
+}
+
+void LCDUI::initScreen() {
+    const int numRows = 2;
+    const int numCols = 16;
+
+    pinMode(10, OUTPUT);
+
+    // Create custom characters for arrows
+    LCDUI::screen.createChar(UP_ARROW_FILLED_CHAR, UP_ARROW_FILLED_DATA);
+    LCDUI::screen.createChar(UP_ARROW_BORDERS_CHAR, UP_ARROW_BORDERS_DATA);
+    LCDUI::screen.createChar(DOWN_ARROW_FILLED_CHAR, DOWN_ARROW_FILLED_DATA);
+    LCDUI::screen.createChar(DOWN_ARROW_BORDERS_CHAR, DOWN_ARROW_BORDERS_DATA);
+
+    // set up the LCD's number of columns and rows:
+    LCDUI::screen.begin(numCols,numRows);
+
+    // Set LCD bright, initially to 80%
+    analogWrite(10, 80);
+}
+
+void LCDUI::printKeyState() {
+
 }
 

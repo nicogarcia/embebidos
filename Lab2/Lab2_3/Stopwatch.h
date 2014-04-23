@@ -28,25 +28,32 @@ public:
 
     // Current bright
     static int current_bright;
-private:
 
+    // Maximum times stored
+    static const int TIMES_LENGTH = 10;
+
+    // Total count of times recorded
+    static int times_count;
+
+    // Times recorded
+    static long times[TIMES_LENGTH];
+
+    // Current viewing recorded time
+    static int viewing_index;
+private:
     int current_state_pointer;
 
-    // Max time
+    // Max time ¡in ms!
     static const unsigned long STOPWATCH_MAX_TIME = 5999999;
 
-
-    // Time when descending counting started
+    // Time when counting started
     static unsigned long start_time;
-    // Start time of mcd state
+    // Initial time of mca state
+    static unsigned long mca_initial_time;
+    // Initial time of mcd state
     static unsigned long mcd_initial_time;
 
-    // Stored times
-    static const int TIMES_LENGTH = 10;
-    static long times[TIMES_LENGTH];
-    static int times_count;
     static int next_available_index;
-    static int viewing_index;
 
     // State functions
     static void MP_state_action();

@@ -14,6 +14,7 @@ private:
 
     // Idle state flag
     bool idle;
+    unsigned long idle_start_time;
 
     // Start time
     unsigned long start_time;
