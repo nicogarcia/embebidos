@@ -39,11 +39,17 @@ private:
     static void DOWN_key_callback();
     static void SELECT_key_callback();
 
+    // Long keypress time reached callback
+    void long_key_down_callback();
+
     // Start idle timer
     static void idle_start();
 
     // Callback for idle time reached
     static void idle_callback();
+
+    // Reset key states to false (not pressed)
+    static void reset_key_states();
 };
 extern KeyManagement_ KeyManagement;
 

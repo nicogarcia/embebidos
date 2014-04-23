@@ -9,9 +9,12 @@
 
 KeyManagement_ KeyManagement;
 
-void reset_key_states() {
+// Stores key states (down or up), and long press
+bool KeyManagement_::key_states[4];
+
+void KeyManagement_::reset_key_states() {
     for (int i = 0; i < 4; i++)
-        KeyManagement::key_states[i] = false;
+        key_states[i] = false;
 }
 
 KeyManagement_::KeyManagement_() {

@@ -53,13 +53,11 @@ private:
 
     // LCD Key states variables
     enum KeyStatePosition {
-        UI_KEY_POSITION_UP = 0,
-        UI_KEY_POSITION_SELECT = 1,
-        UI_KEY_POSITION_DOWN = 2,
-        UI_KEY_POSITION_LONG = 3
+        UI_KEY_POSITION_UP = 14,
+        UI_KEY_POSITION_SELECT = 15,
+        UI_KEY_POSITION_DOWN = 14,
+        UI_KEY_POSITION_LONG = 15
     };
-    char key_state_serial[4];
-    char key_state_lcd[4];
 
     // Printing methods
     void printFirstLine();

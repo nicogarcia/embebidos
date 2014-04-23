@@ -2,6 +2,7 @@
 #include "SoftwareSerial.h"
 #include "Stopwatch.h"
 #include "LiquidCrystal.h"
+#include "KeyManagement.h"
 #include "LCDUI.h"
 
 // LCDUI instance
@@ -74,14 +75,6 @@ LCDUI::LCDUI() {
     first_line[LINE_LENGHT] = 0;
     second_line[LINE_LENGHT] = 0;
 
-    for(int i = 0; i < 4; i++)
-        key_state_serial[i] = ' ';
-
-    key_state_lcd[UI_KEY_POSITION_UP] = UP_ARROW_BORDERS_CHAR;
-    key_state_lcd[UI_KEY_POSITION_DOWN] = DOWN_ARROW_BORDERS_CHAR;
-    key_state_lcd[UI_KEY_POSITION_SELECT] = ' ';
-    key_state_lcd[UI_KEY_POSITION_LONG] = ' ';
-
     latest_time = 0;
 
     second_line_builders[Stopwatch.STATE_MP] = MP_buildSecondLine;
@@ -97,7 +90,9 @@ LCDUI::LCDUI() {
 void LCDUI::updateUI() {
     printFirstLine();
     printSecondLine();
+
     printKeyState();
+
     print_message();
 
     // LCDPrint();
@@ -112,19 +107,6 @@ void LCDUI::LCDPrint() {
     // Actually print second line
     screen.setCursor(0, 1);
     screen.print(second_line);
-
-    // Actually print key states
-    // Print up and select key states
-    screen.setCursor(LINE_LENGHT, 0);
-    screen.print(key_state_lcd[UI_KEY_POSITION_UP]);
-    screen.setCursor(LINE_LENGHT + 1, 0);
-    screen.print(key_state_lcd[UI_KEY_POSITION_SELECT]);
-
-    // Print down and long key states
-    screen.setCursor(LINE_LENGHT, 1);
-    screen.print(key_state_lcd[UI_KEY_POSITION_DOWN]);
-    screen.setCursor(LINE_LENGHT + 1, 1);
-    screen.print(key_state_lcd[UI_KEY_POSITION_LONG]);
 }
 
 void LCDUI::SerialPrint() {
@@ -133,8 +115,6 @@ void LCDUI::SerialPrint() {
 
     // Print second line through Serial
     Serial.println(second_line);
-
-
 }
 
 LCDUI::UI_Time LCDUI::ms_to_time(unsigned long time_ms) {
@@ -250,13 +230,30 @@ void LCDUI::initScreen() {
 }
 
 void LCDUI::printKeyState() {
+    if(KeyManagement.key_states[KeyManagement.KEY_STATE_UP])
+        first_line[UI_KEY_POSITION_UP] = 'U';
+    else
+        first_line[UI_KEY_POSITION_UP] = '-';
 
+    if(KeyManagement.key_states[KeyManagement.KEY_STATE_SELECT])
+        first_line[UI_KEY_POSITION_SELECT] = 'S';
+    else
+        first_line[UI_KEY_POSITION_SELECT] = '-';
+
+    if(KeyManagement.key_states[KeyManagement.KEY_STATE_DOWN])
+        second_line[UI_KEY_POSITION_DOWN] = 'D';
+    else
+        second_line[UI_KEY_POSITION_DOWN] = '-';
+
+    if(KeyManagement.key_states[KeyManagement.KEY_STATE_LONG])
+        second_line[UI_KEY_POSITION_LONG] = 'L';
+    else
+        second_line[UI_KEY_POSITION_LONG] = '-';
 }
 
 void LCDUI::print_no_save() {
     my_strcpy(" NO HAY TIEMPOS ",first_line);
     my_strcpy("   GUARDADOS    ",second_line);
-
 }
 
 void LCDUI::print_saved_time() {
