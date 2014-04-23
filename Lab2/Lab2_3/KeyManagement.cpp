@@ -5,6 +5,7 @@
 #include "Stopwatch.h"
 #include "StopwatchState.h"
 #include "SystemClock.h"
+#include "LCDUI.h"
 
 KeyManagement_ KeyManagement;
 
@@ -49,6 +50,9 @@ void KeyManagement_::up_key_callback() {
 
     Stopwatch.getCurrentState()->execute(key);
 
+    //  Update current mode screen
+    lcd_ui.updateUI();
+
     // Start idle timer
     idle_start();
 }
@@ -68,6 +72,9 @@ void KeyManagement_::down_key_callback() {
     }
 
     Stopwatch.getCurrentState()->execute(key);
+
+    //  Update current mode screen
+    lcd_ui.updateUI();
 
     // Start idle timer
     idle_start();
@@ -89,6 +96,9 @@ void KeyManagement_::select_key_callback() {
 
     Stopwatch.getCurrentState()->execute(key);
 
+    //  Update current mode screen
+    lcd_ui.updateUI();
+
     // Start idle timer
     idle_start();
 }
@@ -102,6 +112,7 @@ void KeyManagement_::idle_start() {
 
 // Idle function callback
 void KeyManagement_::idle_callback() {
+    // FIXME: BUG! This is always triggered
     // If system is still idle (no keydown event triggered)
     if(KeyManagement.idle)
         Stopwatch.getCurrentState()->execute(StopwatchState::NONE);

@@ -130,8 +130,6 @@
       <Value>%25ARDUINO_HOME%25\hardware\arduino\cores\arduino</Value>
       <Value>%25ARDUINO_HOME%25\hardware\arduino\variants\standard</Value>
       <Value>%25ARDUINO_HOME%25\libraries\SoftwareSerial</Value>
-      <Value>%25ARDUINO_HOME%25\libraries\LiquidCrystal</Value>
-      <Value>../../../../../arduino-1.0.4/libraries/LiquidCrystal</Value>
     </ListValues>
   </avrgcccpp.compiler.directories.IncludePaths>
   <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
@@ -166,6 +164,12 @@
     <Compile Include="KeyManagement.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="LCDUI.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="LCDUI.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="LiquidCrystal.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -185,12 +189,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="StopwatchState.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="UserInterface.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="UserInterface.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

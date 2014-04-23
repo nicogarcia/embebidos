@@ -5,7 +5,7 @@ class StopwatchState {
 public:
     StopwatchState(void (*)());
 
-    void setEventResponse(int key_event, StopwatchState* next_state, void (*Action)());
+    void setEventResponse(int key_event, int next_state, void (*Action)());
 
     // Executes its Response to the key_event
     void execute(int key_event);
@@ -27,9 +27,9 @@ private:
     class Response {
     public:
         Response() {
-            nextState = NULL;
+            nextState = -1;
         }
-        StopwatchState* nextState;
+        int nextState;
         void (*Action)();
     };
 
