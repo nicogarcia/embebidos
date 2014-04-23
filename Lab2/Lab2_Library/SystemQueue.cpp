@@ -1,9 +1,7 @@
 #include "SystemQueue.h"
 #include "Arduino.h"
 
-
 //Implementation of a Array Queue to store and execute functions
-
 
 SystemQueue::SystemQueue() {
     size = 0;

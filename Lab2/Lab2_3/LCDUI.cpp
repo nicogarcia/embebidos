@@ -58,17 +58,16 @@ byte LCDUI::DOWN_ARROW_BORDERS_DATA[8] = {
     B00000,
 };
 
-
 // initialize the library with the numbers of the interface pins
 LiquidCrystal LCDUI::screen = LiquidCrystal(8, 9, 4, 5, 6, 7);
 
 const char* LCDUI::MODE_NAMES[MODES_COUNT] = {
-    "   PAUSADO",
-    "  CRONOMETRO",
-    " TEMPORIZADOR",
-    "   REGISTRO",
-    "    BRILLO",
-    "EMBEBIDOS LAB 2 "
+    "   EN PAUSA   ",
+    "  CRONOMETRO  ",
+    " TEMPORIZADOR ",
+    "   REGISTRO   ",
+    "    BRILLO    ",
+    "EMBEBIDOS  LAB 2"
 };
 
 LCDUI::LCDUI() {
@@ -95,7 +94,7 @@ void LCDUI::updateUI() {
 
     print_message();
 
-    // LCDPrint();
+    LCDPrint();
     SerialPrint();
 }
 
@@ -197,7 +196,7 @@ void LCDUI::MVT_buildSecondLine() {
     if(Stopwatch.times_count == 0)
         my_strcpy("    Vacio      ",second_line);
     else
-        printTime(ms_to_time(time), second_line, 4);
+        printTime(ms_to_time(time), second_line, 3);
 }
 
 void LCDUI::MAD_buildSecondLine() {
@@ -230,25 +229,29 @@ void LCDUI::initScreen() {
 }
 
 void LCDUI::printKeyState() {
+    // Don't print keys in the welcome screen
+    if(Stopwatch.getCurrentStatePointer() == Stopwatch.STATE_INIT)
+        return;
+
     if(KeyManagement.key_states[KeyManagement.KEY_STATE_UP])
-        first_line[UI_KEY_POSITION_UP] = 'U';
+        first_line[UI_KEY_POSITION_UP] = UP_ARROW_FILLED_CHAR;
     else
-        first_line[UI_KEY_POSITION_UP] = '-';
+        first_line[UI_KEY_POSITION_UP] = UP_ARROW_BORDERS_CHAR;
 
     if(KeyManagement.key_states[KeyManagement.KEY_STATE_SELECT])
         first_line[UI_KEY_POSITION_SELECT] = 'S';
     else
-        first_line[UI_KEY_POSITION_SELECT] = '-';
+        first_line[UI_KEY_POSITION_SELECT] = ' ';
 
     if(KeyManagement.key_states[KeyManagement.KEY_STATE_DOWN])
-        second_line[UI_KEY_POSITION_DOWN] = 'D';
+        second_line[UI_KEY_POSITION_DOWN] = DOWN_ARROW_FILLED_CHAR;
     else
-        second_line[UI_KEY_POSITION_DOWN] = '-';
+        second_line[UI_KEY_POSITION_DOWN] = DOWN_ARROW_BORDERS_CHAR;
 
     if(KeyManagement.key_states[KeyManagement.KEY_STATE_LONG])
         second_line[UI_KEY_POSITION_LONG] = 'L';
     else
-        second_line[UI_KEY_POSITION_LONG] = '-';
+        second_line[UI_KEY_POSITION_LONG] = ' ';
 }
 
 void LCDUI::print_no_save() {
@@ -264,16 +267,16 @@ void LCDUI::print_saved_time() {
 
 void LCDUI::show_no_saved_message() {
     print_message = print_no_save;
-    SystemClock.attach(Task(1000,stop_printing));
+    SystemClock.attach(Task(1500,stop_printing_messages));
 }
 
 void LCDUI::show_saved_time_message(unsigned long time) {
     print_message = print_saved_time;
     time_saved = time;
-    SystemClock.attach(Task(1000,stop_printing));
+    SystemClock.attach(Task(1500,stop_printing_messages));
 }
 
-void LCDUI::stop_printing() {
+void LCDUI::stop_printing_messages() {
     print_message = empty_function;
 }
 

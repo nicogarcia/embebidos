@@ -9,6 +9,9 @@
 
 KeyManagement_ KeyManagement;
 
+unsigned long KeyManagement_::long_enabled_time;
+unsigned long KeyManagement_::key_down_time;
+
 // Stores key states (down or up), and long press
 bool KeyManagement_::key_states[4];
 
@@ -20,6 +23,7 @@ void KeyManagement_::reset_key_states() {
 KeyManagement_::KeyManagement_() {
     idle = false;
     key_down_time = 0;
+    long_enabled_time = false;
 
     KeypadDriver.registerOnKeyDownCallback(UP_key_down_callback, LCDKeypadKeys::KEY_UP);
     KeypadDriver.registerOnKeyDownCallback(DOWN_key_down_callback, LCDKeypadKeys::KEY_DOWN);
@@ -30,9 +34,15 @@ KeyManagement_::KeyManagement_() {
     KeypadDriver.registerOnKeyUpCallback(SELECT_key_callback, LCDKeypadKeys::KEY_SELECT);
 }
 
-void key_down_common() {
+void KeyManagement_::key_down_common() {
     // Store start time to check press length
     KeyManagement.key_down_time = SystemClock.getMillis();
+
+    // Disable UI message if present
+    lcd_ui.stop_printing_messages();
+
+    SystemClock.attach(Task((unsigned long)LONG_PRESS_LENGHT_MS, long_key_down_callback));
+    long_enabled_time = SystemClock.getMillis();
 
     //  Update keys
     lcd_ui.updateUI();
@@ -79,6 +89,12 @@ void KeyManagement_::SELECT_key_down_callback() {
 }
 
 void KeyManagement_::long_key_down_callback() {
+    unsigned long time_since_key_down = SystemClock.getMillis() - KeyManagement.key_down_time;
+
+    // Determine if key is UP or UP_LONG
+    if(time_since_key_down < LONG_PRESS_LENGHT_MS)
+        return;
+
     key_states[KEY_STATE_LONG] = true;
 
     //  Update long key press indicator
@@ -89,21 +105,22 @@ void KeyManagement_::long_key_down_callback() {
 // Up
 void KeyManagement_::UP_key_callback() {
     int key;
-    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.key_down_time) / 1000;
+    unsigned long time_since_key_down = SystemClock.getMillis() - KeyManagement.key_down_time;
+
+    // Determine if key is UP or UP_LONG
+    if((time_since_key_down >= LONG_PRESS_LENGHT_MS) && key_states[KEY_STATE_LONG]) {
+        key = StopwatchState::UP_LONG;
+        Serial.println("UP_LONG up");
+    } else {
+        key = StopwatchState::UP;
+        Serial.println("UP up");
+    }
 
     // Set all keys as not pressed
     reset_key_states();
 
-    // Determine if key is UP or UP_LONG
-    if(time_since_key_down < LONG_PRESS_LENGHT) {
-        key = StopwatchState::UP;
-        Serial.println("UP up");
-    } else {
-        key = StopwatchState::UP_LONG;
-        Serial.println("UP_LONG up");
-    }
-
     Stopwatch.getCurrentState()->execute(key);
+    KeyManagement.key_down_time = SystemClock.getMillis();
 
     //  Update current mode screen
     lcd_ui.updateUI();
@@ -115,21 +132,23 @@ void KeyManagement_::UP_key_callback() {
 // Down
 void KeyManagement_::DOWN_key_callback() {
     int key;
-    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.key_down_time) / 1000;
+    unsigned long time_since_key_down = SystemClock.getMillis() - KeyManagement.key_down_time;
+
+    // Determine if key is DOWN or DOWN_LONG
+    //if(time_since_key_down < LONG_PRESS_LENGHT_MS) {
+    if((time_since_key_down >= LONG_PRESS_LENGHT_MS) && key_states[KEY_STATE_LONG]) {
+        key = StopwatchState::DOWN_LONG;
+        Serial.println("DOWN_LONG up");
+    } else {
+        key = StopwatchState::DOWN;
+        Serial.println("DOWN up");
+    }
 
     // Set all keys as not pressed
     reset_key_states();
 
-    // Determine if key is DOWN or DOWN_LONG
-    if(time_since_key_down < LONG_PRESS_LENGHT) {
-        key = StopwatchState::DOWN;
-        Serial.println("DOWN up");
-    } else {
-        key = StopwatchState::DOWN_LONG;
-        Serial.println("DOWN_LONG up");
-    }
-
     Stopwatch.getCurrentState()->execute(key);
+    KeyManagement.key_down_time = SystemClock.getMillis();
 
     //  Update current mode screen
     lcd_ui.updateUI();
@@ -141,21 +160,25 @@ void KeyManagement_::DOWN_key_callback() {
 // Select
 void KeyManagement_::SELECT_key_callback() {
     int key;
-    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.key_down_time) / 1000;
+    unsigned long time_since_key_down = SystemClock.getMillis() - KeyManagement.key_down_time;
+    unsigned long long_actual_lenght = SystemClock.getMillis() - long_enabled_time;
+
+    // Determine if key is SELECT or SELECT_LONG
+    //if(time_since_key_down < LONG_PRESS_LENGHT_MS) {
+
+    if((time_since_key_down >= LONG_PRESS_LENGHT_MS) && key_states[KEY_STATE_LONG]) {
+        key = StopwatchState::SELECT_LONG;
+        Serial.println("SELECT_LONG up");
+    } else {
+        key = StopwatchState::SELECT;
+        Serial.println("SELECT up");
+    }
 
     // Set all keys as not pressed
     reset_key_states();
 
-    // Determine if key is SELECT or SELECT_LONG
-    if(time_since_key_down < LONG_PRESS_LENGHT) {
-        key = StopwatchState::SELECT;
-        Serial.println("SELECT up");
-    } else {
-        key = StopwatchState::SELECT_LONG;
-        Serial.println("SELECT_LONG up");
-    }
-
     Stopwatch.getCurrentState()->execute(key);
+    KeyManagement.key_down_time = SystemClock.getMillis();
 
     //  Update current mode screen
     lcd_ui.updateUI();

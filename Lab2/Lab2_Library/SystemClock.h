@@ -30,7 +30,7 @@ public:
 
     void deleteTask(int i);
 
-    static const int TOTAL_TASKS = 5;
+    static const int TOTAL_TASKS = 30;
 
     // Attach callback to pending queue
     void attach(Task task);
@@ -40,7 +40,7 @@ public:
 private:
 
     // System millis (long)
-    volatile unsigned long millis;
+    volatile unsigned long milliseconds;
 
     // Initialize TIMER2 parameters
     void init_timer2();

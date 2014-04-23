@@ -9,7 +9,7 @@ SystemClock_::SystemClock_() {
 
     tasks_attached = 0;
 
-    millis = 0;
+    milliseconds = 0;
     event_flag = false;
 
     EmptyTask = Task();
@@ -24,7 +24,7 @@ SystemClock_::SystemClock_() {
 
 // Get system millis
 unsigned long SystemClock_::getMillis() {
-    return millis;
+    return millis();
 }
 
 // Initialize TIMER0 parameters
@@ -54,7 +54,7 @@ void SystemClock_::attach(Task task) {
                 tasks[i] = task;
 
                 //set the start_time (the current time)
-                tasks[i].start_time = millis;
+                tasks[i].start_time = getMillis();
                 break;
             }
         }
@@ -99,13 +99,14 @@ void SystemClock_::enqueue( fptr function ) {
 
 // Timer ISR to count millis
 void TIMER2_COMPA_vect() {
-    SystemClock.millis++;
+    // Unnecesary, arduino provides millis()
+    //SystemClock.milliseconds++;
 
     for (int i = 0; i < SystemClock.TOTAL_TASKS; i++) {
         // FIXME: Redo this conditional
         if(SystemClock.tasks[i].callback != NULL) {
             //When it's time to execute the function
-            if(SystemClock.millis - SystemClock.getTaskStartTime(i) >= SystemClock.getTaskTime(i)) {
+            if(SystemClock.getMillis() - SystemClock.getTaskStartTime(i) >= SystemClock.getTaskTime(i)) {
                 //Enqueue the function to do.
                 SystemClock.ReadyTasksQueue.enqueue(SystemClock.getTaskCallback(i));
                 //delete the task

@@ -48,9 +48,9 @@ Stopwatch_::Stopwatch_() {
 
     states[STATE_MP].setEventResponse(StopwatchState::DOWN_LONG, STATE_MCD, start_from_max_time);
 
-    states[STATE_MP].setEventResponse(StopwatchState::SELECT, STATE_MVT, reset_viewing_time);
+    states[STATE_MP].setEventResponse(StopwatchState::SELECT_LONG, STATE_MVT, reset_viewing_time);
 
-    states[STATE_MP].setEventResponse(StopwatchState::SELECT_LONG, STATE_MAD, NULL);
+    states[STATE_MP].setEventResponse(StopwatchState::SELECT, STATE_MAD, NULL);
 
     // MCA State config
     states[STATE_MCA].setEventResponse(StopwatchState::UP, STATE_MCA, store_current_time);
@@ -108,8 +108,10 @@ void Stopwatch_::MCD_state_action() {
     // Get current Stopwatch time
     current_time = (mcd_initial_time - (SystemClock.getMillis() - start_time));
     // Turn over to max (when there's overflow)
-    if (current_time > STOPWATCH_MAX_TIME)
+    if (current_time > STOPWATCH_MAX_TIME) {
+        start_time = SystemClock.getMillis();
         mcd_initial_time = STOPWATCH_MAX_TIME;
+    }
     //  Update current mode screen
     lcd_ui.updateUI();
 }
@@ -177,25 +179,31 @@ void Stopwatch_::store_current_time() {
 
 // Increase current viewing time pointer
 void Stopwatch_::show_next_stored_time() {
-    // If viewing time is the latest stored, ignore action
-    if((viewing_index + 1) % times_count == next_available_index)
+    // Calculate the first saved time
+    int first = (next_available_index - times_count) % TIMES_LENGTH;
+
+    // Calculate the following viewing time
+    int next_viewing_pointer = (viewing_index + 1) % times_count;
+
+    // If the following viewing index is the first or the latest saved time, ignore command
+    if((next_viewing_pointer == first) || (next_viewing_pointer == next_available_index))
         return;
 
     // Increase viewing pointer
-    viewing_index = (viewing_index + 1) % times_count;
+    viewing_index = next_viewing_pointer;
 }
 
 // Decrease current viewing time pointer
 void Stopwatch_::show_previous_stored_time() {
-    // If the array is full, then the last to show should be 'next_available_index'
-    if(times_count == TIMES_LENGTH) {
-        // If viewing is next_avialable, ignore the command, else decrease pointer
-        if(viewing_index == next_available_index)
-            return;
-        else
-            viewing_index = (viewing_index - 1) % times_count;
-    } else
-        viewing_index = max(0, viewing_index - 1);
+    // Calculate the first saved time
+    int first = (next_available_index - times_count) % TIMES_LENGTH;
+
+    // If viewing is next_avialable, ignore the command, else decrease pointer
+    if(viewing_index == first)
+        return;
+
+    // Decrement viewing pointer
+    viewing_index = (viewing_index - 1) % times_count;
 }
 
 void Stopwatch_::increase_lcd_bright() {

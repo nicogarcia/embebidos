@@ -17,6 +17,9 @@ public:
     void show_no_saved_message();
 
     void show_saved_time_message(unsigned long save);
+
+    //To stop printing message
+    static void stop_printing_messages();
 private:
     // Time structure and function
     typedef struct {
@@ -86,18 +89,17 @@ private:
     static void empty_function() {};
     static void print_no_save();
     static void print_saved_time();
-    //To stop printing message
-    static void stop_printing();
 
     // Special characters
-    static const int UP_ARROW_FILLED_CHAR = 0;
-    static const int UP_ARROW_BORDERS_CHAR = 1;
-    static const int DOWN_ARROW_FILLED_CHAR = 2;
-    static const int DOWN_ARROW_BORDERS_CHAR = 3;
+    static const byte UP_ARROW_FILLED_CHAR = 0;
+    static const byte UP_ARROW_BORDERS_CHAR = 1;
+    static const byte DOWN_ARROW_FILLED_CHAR = 2;
+    static const byte DOWN_ARROW_BORDERS_CHAR = 3;
+
     // Special characters data
     static byte UP_ARROW_FILLED_DATA[8];
-    static byte DOWN_ARROW_FILLED_DATA[8];
     static byte UP_ARROW_BORDERS_DATA[8];
+    static byte DOWN_ARROW_FILLED_DATA[8];
     static byte DOWN_ARROW_BORDERS_DATA[8];
 
 };
