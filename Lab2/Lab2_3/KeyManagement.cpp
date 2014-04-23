@@ -9,35 +9,87 @@
 
 KeyManagement_ KeyManagement;
 
-KeyManagement_::KeyManagement_() {
-    idle = false;
-    start_time = 0;
-
-    const int key_count = 3;
-    const int keys[] = { LCDKeypadKeys::KEY_UP,
-                         LCDKeypadKeys::KEY_DOWN, LCDKeypadKeys::KEY_SELECT
-                       };
-
-    for(int i = 0; i < key_count; i++)
-        KeypadDriver.registerOnKeyDownCallback(key_down_callback, keys[i]);
-
-    KeypadDriver.registerOnKeyUpCallback(up_key_callback, LCDKeypadKeys::KEY_UP);
-    KeypadDriver.registerOnKeyUpCallback(down_key_callback, LCDKeypadKeys::KEY_DOWN);
-    KeypadDriver.registerOnKeyUpCallback(select_key_callback, LCDKeypadKeys::KEY_SELECT);
+void reset_key_states() {
+    for (int i = 0; i < 4; i++)
+        KeyManagement::key_states[i] = false;
 }
 
-// Key down single function
-void KeyManagement_::key_down_callback() {
-    KeyManagement.start_time = SystemClock.getMillis();
-    Serial.print("Key down | ");
+KeyManagement_::KeyManagement_() {
+    idle = false;
+    key_down_time = 0;
+
+    KeypadDriver.registerOnKeyDownCallback(UP_key_down_callback, LCDKeypadKeys::KEY_UP);
+    KeypadDriver.registerOnKeyDownCallback(DOWN_key_down_callback, LCDKeypadKeys::KEY_DOWN);
+    KeypadDriver.registerOnKeyDownCallback(SELECT_key_down_callback, LCDKeypadKeys::KEY_SELECT);
+
+    KeypadDriver.registerOnKeyUpCallback(UP_key_callback, LCDKeypadKeys::KEY_UP);
+    KeypadDriver.registerOnKeyUpCallback(DOWN_key_callback, LCDKeypadKeys::KEY_DOWN);
+    KeypadDriver.registerOnKeyUpCallback(SELECT_key_callback, LCDKeypadKeys::KEY_SELECT);
+}
+
+void key_down_common() {
+    // Store start time to check press length
+    KeyManagement.key_down_time = SystemClock.getMillis();
+
+    //  Update keys
+    lcd_ui.updateUI();
+
+    // Disable inactivity flag
     KeyManagement.idle = false;
+}
+// Key down functions
+// Up
+void KeyManagement_::UP_key_down_callback() {
+    // Reset states and set Up key as pressed
+    reset_key_states();
+    key_states[KEY_STATE_UP] = true;
+
+    // Do common work for key down
+    key_down_common();
+
+    // Debug
+    Serial.print("UP Key down | ");
+}
+
+void KeyManagement_::DOWN_key_down_callback() {
+    // Reset states and set Up key as pressed
+    reset_key_states();
+    key_states[KEY_STATE_DOWN] = true;
+
+    // Do common work for key down
+    key_down_common();
+
+    // Debug
+    Serial.print("UP Key down | ");
+}
+
+void KeyManagement_::SELECT_key_down_callback() {
+    // Reset states and set Up key as pressed
+    reset_key_states();
+    key_states[KEY_STATE_SELECT] = true;
+
+    // Do common work for key down
+    key_down_common();
+
+    // Debug
+    Serial.print("UP Key down | ");
+}
+
+void KeyManagement_::long_key_down_callback() {
+    key_states[KEY_STATE_LONG] = true;
+
+    //  Update long key press indicator
+    lcd_ui.updateUI();
 }
 
 // Key up functions
 // Up
-void KeyManagement_::up_key_callback() {
+void KeyManagement_::UP_key_callback() {
     int key;
-    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.start_time) / 1000;
+    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.key_down_time) / 1000;
+
+    // Set all keys as not pressed
+    reset_key_states();
 
     // Determine if key is UP or UP_LONG
     if(time_since_key_down < LONG_PRESS_LENGHT) {
@@ -58,9 +110,12 @@ void KeyManagement_::up_key_callback() {
 }
 
 // Down
-void KeyManagement_::down_key_callback() {
+void KeyManagement_::DOWN_key_callback() {
     int key;
-    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.start_time) / 1000;
+    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.key_down_time) / 1000;
+
+    // Set all keys as not pressed
+    reset_key_states();
 
     // Determine if key is DOWN or DOWN_LONG
     if(time_since_key_down < LONG_PRESS_LENGHT) {
@@ -81,9 +136,12 @@ void KeyManagement_::down_key_callback() {
 }
 
 // Select
-void KeyManagement_::select_key_callback() {
+void KeyManagement_::SELECT_key_callback() {
     int key;
-    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.start_time) / 1000;
+    int time_since_key_down = (SystemClock.getMillis() - KeyManagement.key_down_time) / 1000;
+
+    // Set all keys as not pressed
+    reset_key_states();
 
     // Determine if key is SELECT or SELECT_LONG
     if(time_since_key_down < LONG_PRESS_LENGHT) {
@@ -117,7 +175,7 @@ void KeyManagement_::idle_start() {
 // Idle function callback
 void KeyManagement_::idle_callback() {
     // Get idle time period
-    unsigned long idle_time = SystemClock.getMillis() - KeyManagement.start_time;
+    unsigned long idle_time = SystemClock.getMillis() - KeyManagement.key_down_time;
 
     // If system is still idle and time is longer than idle lenght, then take idle-state actions
     if(KeyManagement.idle && (idle_time >= (long) IDLE_TIME_MS) &&
