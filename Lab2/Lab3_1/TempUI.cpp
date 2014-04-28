@@ -1,0 +1,13 @@
+#include "TempUI.h"
+#include "TempMonitor.h"
+
+UI_ ui;
+
+void UI_::buildFirstLine() {
+    my_strcpy(TempMonitor.state_names[TempMonitor.current_state],
+              first_line);
+}
+void UI_::buildSecondLine() {
+    const int padding = 6;
+    double_to_str(data[TempMonitor.current_state], second_line + padding);
+}

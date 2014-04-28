@@ -116,6 +116,7 @@
     <ListValues>
       <Value>%25ARDUINO_HOME%25\hardware\arduino\cores\arduino</Value>
       <Value>%25ARDUINO_HOME%25\hardware\arduino\variants\standard</Value>
+      <Value>%25ARDUINO_HOME%25\libraries\SoftwareSerial</Value>
     </ListValues>
   </avrgcccpp.compiler.directories.IncludePaths>
   <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
@@ -155,6 +156,18 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="LCDKeypadKeys.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="LCDUI.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="LCDUI.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="LiquidCrystal.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="LiquidCrystal.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="SystemClock.cpp">

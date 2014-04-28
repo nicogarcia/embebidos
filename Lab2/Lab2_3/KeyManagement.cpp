@@ -5,7 +5,7 @@
 #include "Stopwatch.h"
 #include "StopwatchState.h"
 #include "SystemClock.h"
-#include "LCDUI.h"
+#include "StopwatchUI.h"
 
 KeyManagement_ KeyManagement;
 
@@ -39,13 +39,13 @@ void KeyManagement_::key_down_common() {
     KeyManagement.key_down_time = SystemClock.getMillis();
 
     // Disable UI message if present
-    lcd_ui.stop_printing_messages();
+    ui.disable_message_print();
 
     SystemClock.attach(Task((unsigned long)LONG_PRESS_LENGHT_MS, long_key_down_callback));
     long_enabled_time = SystemClock.getMillis();
 
     //  Update keys
-    lcd_ui.updateUI();
+    ui.updateUI();
 
     // Disable inactivity flag
     KeyManagement.idle = false;
@@ -98,7 +98,7 @@ void KeyManagement_::long_key_down_callback() {
     key_states[KEY_STATE_LONG] = true;
 
     //  Update long key press indicator
-    lcd_ui.updateUI();
+    ui.updateUI();
 }
 
 // Key up functions
@@ -123,7 +123,7 @@ void KeyManagement_::UP_key_callback() {
     KeyManagement.key_down_time = SystemClock.getMillis();
 
     //  Update current mode screen
-    lcd_ui.updateUI();
+    ui.updateUI();
 
     // Start idle timer
     idle_start();
@@ -151,7 +151,7 @@ void KeyManagement_::DOWN_key_callback() {
     KeyManagement.key_down_time = SystemClock.getMillis();
 
     //  Update current mode screen
-    lcd_ui.updateUI();
+    ui.updateUI();
 
     // Start idle timer
     idle_start();
@@ -161,7 +161,6 @@ void KeyManagement_::DOWN_key_callback() {
 void KeyManagement_::SELECT_key_callback() {
     int key;
     unsigned long time_since_key_down = SystemClock.getMillis() - KeyManagement.key_down_time;
-    unsigned long long_actual_lenght = SystemClock.getMillis() - long_enabled_time;
 
     // Determine if key is SELECT or SELECT_LONG
     //if(time_since_key_down < LONG_PRESS_LENGHT_MS) {
@@ -181,7 +180,7 @@ void KeyManagement_::SELECT_key_callback() {
     KeyManagement.key_down_time = SystemClock.getMillis();
 
     //  Update current mode screen
-    lcd_ui.updateUI();
+    ui.updateUI();
 
     // Start idle timer
     idle_start();
@@ -209,6 +208,6 @@ void KeyManagement_::idle_callback() {
 
         Stopwatch.getCurrentState()->execute(StopwatchState::NONE);
         //  Update current mode screen
-        lcd_ui.updateUI();
+        ui.updateUI();
     }
 }
