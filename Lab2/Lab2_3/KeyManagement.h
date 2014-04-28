@@ -27,7 +27,7 @@ public:
 
 private:
     // Long press length in seconds
-    static const int LONG_PRESS_LENGHT_MS = 2000;
+    static const unsigned int LONG_PRESS_LENGHT_MS = 2000;
 
     // Idle time
     static const int IDLE_TIME_MS = 5000;

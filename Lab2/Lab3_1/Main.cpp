@@ -1,12 +1,9 @@
 #include "Arduino.h"
+#include "SoftwareSerial.h"
+#include "SystemClock.h"
 #include "LCDKeypadKeys.h"
 #include "LCDKeypadDriver.h"
-#include "SoftwareSerial.h"
-#include "KeyManagement.h"
-#include "SystemClock.h"
-#include "Stopwatch.h"
-#include "Task.h"
-#include "StopwatchUI.h"
+#include "TempUI.h"
 
 void setup() {
     ui.initScreen();
@@ -15,14 +12,12 @@ void setup() {
     DDRB |= (1<<DDB5);
 
     Serial.begin(115200);
+    Serial.print("Lab3_1 Start!!\n");
 
-    //  Update current mode screen
     ui.updateUI();
 }
 
 void loop() {
-    Stopwatch.getCurrentState()->RunStateAction();
-
-    // Check system clock events
+    // Check and execute if there were events triggered
     SystemClock.checkEvents();
 }

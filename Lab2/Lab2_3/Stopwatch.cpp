@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "Stopwatch.h"
 #include "StopwatchState.h"
-#include "LCDUI.h"
+#include "StopwatchUI.h"
 #include "SystemClock.h"
 
 // Current time
@@ -36,7 +36,6 @@ StopwatchState Stopwatch_::states[] = {
 Stopwatch_ Stopwatch = Stopwatch_();
 
 Stopwatch_::Stopwatch_() {
-    //TODO INIT_STATE
     current_state_pointer = STATE_INIT;
 
     // MP State config
@@ -101,7 +100,7 @@ void Stopwatch_::MCA_state_action() {
     // Get current Stopwatch time
     current_time = (mca_initial_time + SystemClock.getMillis() - start_time) % STOPWATCH_MAX_TIME;
     //  Update current mode screen
-    lcd_ui.updateUI();
+    ui.updateUI();
 }
 
 void Stopwatch_::MCD_state_action() {
@@ -113,7 +112,7 @@ void Stopwatch_::MCD_state_action() {
         mcd_initial_time = STOPWATCH_MAX_TIME;
     }
     //  Update current mode screen
-    lcd_ui.updateUI();
+    ui.updateUI();
 }
 
 void Stopwatch_::MVT_state_action() {
@@ -134,10 +133,9 @@ void Stopwatch_::start_from_last_time() {
     if(times_count == 0) {
         mca_initial_time = 0;
         mcd_initial_time = STOPWATCH_MAX_TIME;
-        // TODO: Show message?
-        Serial.println("Cannot continue from last saved time. No saved times.");
-        lcd_ui.show_no_saved_message();
-        lcd_ui.updateUI();
+
+        ui.show_no_saved_message();
+        ui.updateUI();
     } else {
         mcd_initial_time = times[(next_available_index - 1) % TIMES_LENGTH];
         mca_initial_time = mcd_initial_time;
@@ -170,11 +168,8 @@ void Stopwatch_::store_current_time() {
     // Increase times count if not full
     times_count = min(times_count + 1, TIMES_LENGTH);
 
-    // TODO: Show message in UI? How ?
-    Serial.print("Time saved OK!");
-
-    lcd_ui.show_saved_time_message(current_time);
-    lcd_ui.updateUI();
+    ui.show_saved_time_message(current_time);
+    ui.updateUI();
 }
 
 // Increase current viewing time pointer
