@@ -1,5 +1,6 @@
 #include "SystemQueue.h"
 #include "Arduino.h"
+#include "SystemClock.h"
 
 //Implementation of a Array Queue to store and execute functions
 
