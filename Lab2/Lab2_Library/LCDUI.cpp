@@ -167,13 +167,14 @@ void LCDUI::disable_message_print() {
     messages_disabled = true;
 }
 
-// Single decimal precision
-void LCDUI::float_to_str( double num, char* destiny ) {
-    char first_dec = (num * 10) % 10 + '0';
-    char first_int = (num % 10) + '0';
-    char second_digit = (num / 10) % 10 + '0';
+// Single decimal precision (Lenght = 4 chars)
+void LCDUI::double_to_str( double num, char* destiny ) {
+    char first_dec = (int) (num * 10) % 10 + '0';
+    char first_int = ((int) num % 10) + '0';
+    char second_digit = ((int) num / 10) % 10 + '0';
 
     destiny[0] = first_dec;
     destiny[1] = first_int;
-    destiny[2] = second_digit;
+    destiny[2] = '.';
+    destiny[3] = second_digit;
 }

@@ -8,6 +8,6 @@ void UI_::buildFirstLine() {
               first_line);
 }
 void UI_::buildSecondLine() {
-    const int padding = 6;
-    double_to_str(data[TempMonitor.current_state], second_line + padding);
+    const int padding = 7;
+    double_to_str(TempMonitor.data[TempMonitor.current_state], second_line + padding);
 }

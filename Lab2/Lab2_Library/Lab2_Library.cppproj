@@ -143,6 +143,18 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ADCManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ADCManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Driver.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="KeyboardDriver.h">
       <SubType>compile</SubType>
     </Compile>
@@ -186,6 +198,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Task.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TempSensorDriver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TempSensorDriver.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
