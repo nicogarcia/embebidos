@@ -6,19 +6,23 @@
 #include "KeyboardDriver.h"
 // Include special properties of the keypad
 #include "LCDKeypadKeys.h"
+#include "Driver.h"
 
 // Callback function array parameters
 #define CALLBACKS_DEPTH		2
 #define KEY_UP_CALLBACK		0
 #define KEY_DOWN_CALLBACK	1
 
-// ISR C++ mapping
-extern "C" void ADC_vect(void) __attribute__ ((signal));
-
 // Implement LCDKeypadDriver for the LCDKeypad Shield
-class LCDKeypadDriver : public KeyboardDriver {
+class LCDKeypadDriver : public Driver {
 public:
     LCDKeypadDriver();
+
+    void initialize() {
+        time = 1;
+        enable = true;
+        isr_func = driver_ISR_lcd;
+    }
 
     // Unimplemented virtual methods, java equivalent of "interface"
     void registerOnKeyDownCallback(void (*handler)(), int key);
@@ -39,8 +43,11 @@ private:
     // Initializes the ADC
     void adc_initialize();
 
+
+    static void driver_ISR_lcd(int adc_value);
     // ADC ISR
-    friend void ADC_vect(void);
+    //friend void driver_ISR(int);
+
 };
 extern LCDKeypadDriver KeypadDriver;
 

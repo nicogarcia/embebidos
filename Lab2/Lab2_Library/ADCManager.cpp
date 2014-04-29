@@ -12,13 +12,13 @@ ADCManager_::ADCManager_() {
 
 void ADCManager_::insertDriver( Driver driver, uint8_t adc ) {
     if (adc < CANT_ADC) {
-        enable_adc_interrupts();
+        //disable_adc_interrupt();
+        noInterrupts();
         drivers[adc] = driver;
-        enable_adc_interrupts();
+        //enable_adc_interrupts();
+        interrupts();
     }
 }
-
-
 
 // ADC initialization routine
 void ADCManager_::adc_initializer() {
@@ -29,7 +29,7 @@ void ADCManager_::adc_initializer() {
     //1 shift 6 places (01000000) to define the reference for the ADC. In this case 5V
     //ADLAR bit is set 0 in ADMUX register because we want the high part of the conversion
     // in ADCH register.
-    ADMUX = (1<<REFS0) | (current & 0x07) ;
+    ADMUX = (1<< REFS1) | (1<<REFS0) | (current & 0x07) ;
 
     // ADC Enable and prescaler of 128
     // 16000000/128 = 125000
@@ -48,7 +48,7 @@ void ADCManager_::adc_initializer() {
 void ADCManager_::disable_adc_interrupt() {
     noInterrupts();
 
-    ADCSRA^=(1<<ADIE);
+    ADCSRA &= ~(1 << ADIE);
 
     interrupts();
 
@@ -66,17 +66,17 @@ void ADCManager_::enable_adc_interrupts() {
 // Key ISR
 void ADC_vect() {
     Driver *current_driver = &ADCManager.drivers[ADCManager.current];
-    if (current_driver->enable && (SystemClock.getMillis() - current_driver->last_execution >= current_driver->time )) {
-        current_driver->value = ADC;
 
-        current_driver->execute_function();
+    if (current_driver->enable && (SystemClock.getMillis() - current_driver->last_execution >= current_driver->time )) {
+
+        current_driver->driver_ISR(ADC);
 
         current_driver->last_execution = SystemClock.getMillis();
 
     }
     ADCManager.current = (ADCManager.current + 1) % ADCManager.CANT_ADC;
 
-    ADMUX = (1<<REFS0) | (ADCManager.current & 0x07) ;
+    ADMUX = (1<< REFS1) | (1<<REFS0)  | (ADCManager.current & 0x07) ;
 
     ADCSRA |= 1<<ADSC;	// Start new ADC conversion
 }

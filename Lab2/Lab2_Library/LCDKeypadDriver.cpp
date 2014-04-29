@@ -14,33 +14,6 @@ LCDKeypadDriver::LCDKeypadDriver() {
         callbacks[KEY_UP_CALLBACK][i] = NULL;
         callbacks[KEY_DOWN_CALLBACK][i] = NULL;
     }
-
-    adc_initialize();
-}
-
-// ADC initialization routine
-void LCDKeypadDriver::adc_initialize() {
-    // Based on example found in http://maxembedded.com/2011/06/20/the-adc-of-the-avr/
-    noInterrupts();
-
-    // AREF = AVcc
-    //1 shift 6 places (01000000) to define the reference for the ADC. In this case 5V
-    //ADLAR bit is set 0 in ADMUX register because we want the high part of the conversion
-    // in ADCH register.
-    ADMUX = (1<<REFS0);
-
-    // ADC Enable and prescaler of 128
-    // 16000000/128 = 125000
-    /**
-     * ADEN: ADC Enable set to 1 to enable de ADC
-     * ADIE: ADC Interrupt Enable. Set to 1 to enable de ADC interrupts
-     * ADPS2::0: The prescalar is define by this three bits. 111 means 128.
-     **/
-    ADCSRA = (1<<ADEN)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
-
-    interrupts();
-
-    ADCSRA |= 1<<ADSC;	// Start Conversion
 }
 
 // Registers the callback function for the keydown event of the corresponding key
@@ -74,12 +47,10 @@ void debouncing() {
     bouncing = false;
 }
 
-// FIXME: TO BE REVIEWED: TIMER SHOULD BE STARTED ON CHANGE, ELSE ADC SHOULD KEEP CONVERTING!
 // Key ISR
-void ADC_vect() {
-
+void LCDKeypadDriver::driver_ISR_lcd(int adc_value) {
     // Read digital value from ADC register
-    current_key = LCDKeypadKeys::GetKey(ADC);
+    current_key = LCDKeypadKeys::GetKey(adc_value);
 
     // Test if there were changes (keyup or keydown)
     if(last_key != current_key) {
@@ -112,6 +83,4 @@ void ADC_vect() {
 
         finish_debouncing = false;
     }
-
-    ADCSRA |= 1<<ADSC;	// Start new ADC conversion
 }

@@ -169,12 +169,13 @@ void LCDUI::disable_message_print() {
 
 // Single decimal precision (Lenght = 4 chars)
 void LCDUI::double_to_str( double num, char* destiny ) {
+    //TODO:Serial.print(num);
     char first_dec = (int) (num * 10) % 10 + '0';
     char first_int = ((int) num % 10) + '0';
-    char second_digit = ((int) num / 10) % 10 + '0';
+    char second_int = ((int) num / 10) % 10 + '0';
 
-    destiny[0] = first_dec;
+    destiny[0] = second_int;
     destiny[1] = first_int;
     destiny[2] = '.';
-    destiny[3] = second_digit;
+    destiny[3] = first_dec;
 }

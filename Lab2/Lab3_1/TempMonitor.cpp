@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "TempMonitor.h"
 #include "LCDKeypadDriver.h"
+#include "TempSensorDriver.h"
 #include "TempUI.h"
 
 TempMonitor_ TempMonitor;
@@ -17,7 +18,7 @@ TempMonitor_::TempMonitor_() {
 
     data[STATE_CURRENT_TEMP] = 0;
     data[STATE_MAX_TEMP] = 0;
-    data[STATE_MIN_TEMP] = 0;
+    data[STATE_MIN_TEMP] = 500;
     data[STATE_AVG_TEMP] = 0;
 
     history_next_available = 0;
@@ -29,21 +30,26 @@ TempMonitor_::TempMonitor_() {
 
 void TempMonitor_::newTemperatureSensed() {
     // TODO: Read read temperature
-    int temperature = 0;
+    double temperature = lm35.temperature;
 
     // Update current temperature
-    data[STATE_CURRENT_TEMP] = temperature;
+    TempMonitor.data[STATE_CURRENT_TEMP] = temperature;
+
+    // TODO: AVG COUNT UPDATE
+    TempMonitor.history_count = max(TempMonitor.history_count + 1, TempMonitor.HISTORY_LENGHT);
+    TempMonitor.temp_history[TempMonitor.history_next_available] = temperature;
+    TempMonitor.history_next_available = (TempMonitor.history_next_available + 1) % TempMonitor.HISTORY_LENGHT;
 
     // Update max and average accum
-    long avg_accum = 0;
-    for(int i = 0; i < history_count; i++) {
-        data[STATE_MAX_TEMP] = max(data[STATE_MAX_TEMP], temp_history[i]);
-        data[STATE_MIN_TEMP] = min(data[STATE_MIN_TEMP], temp_history[i]);
-        avg_accum += temp_history[i];
+    double avg_accum = 0;
+    for(int i = 0; i < TempMonitor.history_count; i++) {
+        TempMonitor.data[STATE_MAX_TEMP] = max(TempMonitor.data[STATE_MAX_TEMP], TempMonitor.temp_history[i]);
+        TempMonitor.data[STATE_MIN_TEMP] = min(TempMonitor.data[STATE_MIN_TEMP], TempMonitor.temp_history[i]);
+        avg_accum += TempMonitor.temp_history[i];
     }
 
     // Update average
-    data[STATE_AVG_TEMP] = avg_accum / history_count;
+    TempMonitor.data[STATE_AVG_TEMP] = avg_accum / (double) TempMonitor.history_count;
 
     // Update UI
     ui.updateUI();
@@ -54,5 +60,9 @@ void TempMonitor_::advance_state() {
     TempMonitor.current_state = (TempMonitor.current_state + 1) % TempMonitor.STATES_COUNT;
 
     // Update UI to see the new state
+    ui.updateUI();
+}
+
+void TempMonitor_::TempSensorCallback() {
     ui.updateUI();
 }

@@ -4,24 +4,26 @@
 #include "Arduino.h"
 #include "SystemClock.h"
 
-typedef void (*fptr)();
-
 class Driver {
 
 public:
     Driver();
-    //constructor for this class
-    Driver(fptr funct, unsigned long every_time);
+
+    fptr callback;
+
+    void (*isr_func)(int);
+
     //The function to do
-    fptr function;
+    void driver_ISR(int adc_value);
+
+    //virtual void initialize();
+
     //the time between execution of the function
     unsigned long time;
+
     //the last time the function was execute
     unsigned long last_execution;
-    //The value of the conversion
-    int value;
-    //To execute the function and update the values
-    void execute_function();
+
     //is null the driver?
     bool enable;
 

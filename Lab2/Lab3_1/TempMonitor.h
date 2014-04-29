@@ -15,7 +15,7 @@ public:
     static const char *state_names[4];
 
     // Temperature data
-    int data[STATES_COUNT];
+    double data[STATES_COUNT];
 
     // Data pointer
     int history_next_available;
@@ -31,12 +31,14 @@ public:
     // Temperature history
     static const int HISTORY_LENGHT = 100;
     int history_count;
-    int temp_history[HISTORY_LENGHT];
+    double temp_history[HISTORY_LENGHT];
 
     // Method to call when there's a new temperature available
-    void newTemperatureSensed();
+    static void newTemperatureSensed();
 
     static void advance_state();
+
+    static void TempSensorCallback();
 };
 extern TempMonitor_ TempMonitor;
 

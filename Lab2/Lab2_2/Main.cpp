@@ -3,6 +3,7 @@
 #include "SystemClock.h"
 #include "LCDKeypadKeys.h"
 #include "LCDKeypadDriver.h"
+#include "ADCManager.h"
 
 void printUpKeyDown() {
     Serial.print("UP: Key Down!\n");
@@ -39,6 +40,7 @@ void setup() {
     //Inicializar el pin del led como salida
     DDRB |= (1<<DDB5);
 
+
     Serial.begin(115200);
     Serial.print("Lab_2_2 Start!! Waiting for Analog inputs...\n");
 
@@ -56,6 +58,10 @@ void setup() {
 
     KeypadDriver.registerOnKeyDownCallback(printSelectKeyDown, LCDKeypadKeys::KEY_SELECT);
     KeypadDriver.registerOnKeyUpCallback(printSelectKeyUp, LCDKeypadKeys::KEY_SELECT);
+
+
+    KeypadDriver.initialize();
+    ADCManager.insertDriver(KeypadDriver, 0);
 
 }
 

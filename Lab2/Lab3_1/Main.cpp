@@ -4,8 +4,22 @@
 #include "LCDKeypadKeys.h"
 #include "LCDKeypadDriver.h"
 #include "TempUI.h"
+#include "TempSensorDriver.h"
+#include "TempMonitor.h"
+#include "ADCManager.h"
 
 void setup() {
+    // TODO: Test
+//    DIDR0 |= (1 << ADC0D) | (1 << ADC1D);
+    //
+    lm35.callback = TempMonitor.newTemperatureSensed;
+    lm35.initialize();
+    KeypadDriver.initialize();
+
+    ADCManager.insertDriver(lm35, 1);
+    ADCManager.insertDriver(KeypadDriver, 0);
+
+    // Initialize lcd screen
     ui.initScreen();
 
     //Inicializar el pin del led como salida

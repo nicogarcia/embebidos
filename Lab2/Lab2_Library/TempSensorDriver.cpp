@@ -1,8 +1,19 @@
 #include "TempSensorDriver.h"
 #include "SystemClock.h"
 
-void TempSensorDriver_::setTemperature( int value ) {
-    temperature = (5.0 * value * 100.0) / 1024;
+TempSensorDriver_ lm35;
 
-    SystemClock.enqueue(callback);
+// FIXME: Should not be static, to be removed
+double TempSensorDriver_::temperature;
+
+void TempSensorDriver_::driver_ISR_temp( int value ) {
+    TempSensorDriver_::temperature = (110 * value) / 1024.0;
+    PORTB ^= (1 << PB5);
+    SystemClock.enqueue(lm35.callback);
+}
+
+void TempSensorDriver_::initialize() {
+    time = 130;
+    enable = true;
+    isr_func = driver_ISR_temp;
 }
