@@ -51,6 +51,17 @@ byte LCDUI::DOWN_ARROW_BORDERS_DATA[8] = {
     B00000,
 };
 
+byte LCDUI::DEGREES_DATA[8] = {
+    B00100,
+    B01010,
+    B00100,
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+};
+
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal LCDUI::screen = LiquidCrystal(8, 9, 4, 5, 6, 7);
@@ -123,7 +134,6 @@ char LCDUI::int_to_char_num(int num) {
 
 // Single decimal precision (Lenght = 4 chars)
 void LCDUI::double_to_str( double num, char* destiny ) {
-    num = num < 0.0 ? -num : num;
 
     char second_dec = int_to_char_num((int) (num * 100) % 10);
     char first_dec = int_to_char_num((int) (num * 10) % 10);
@@ -177,6 +187,7 @@ void LCDUI::initScreen() {
     LCDUI::screen.createChar(UP_ARROW_BORDERS_CHAR, UP_ARROW_BORDERS_DATA);
     LCDUI::screen.createChar(DOWN_ARROW_FILLED_CHAR, DOWN_ARROW_FILLED_DATA);
     LCDUI::screen.createChar(DOWN_ARROW_BORDERS_CHAR, DOWN_ARROW_BORDERS_DATA);
+    LCDUI::screen.createChar(DEGREES_CHAR, DEGREES_DATA);
 
     // set up the LCD's number of columns and rows:
     LCDUI::screen.begin(numCols, numRows);

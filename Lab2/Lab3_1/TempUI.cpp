@@ -8,11 +8,15 @@ void TempUI_::buildFirstLine() {
               first_line);
 }
 
-void TempUI_::buildSecondLine() {
+void TempUI_::printTemperature(int state) {
     const int padding = 3;
-    double_to_str(TempMonitor.data[TempMonitor.current_state], second_line + padding);
-    *(second_line + padding + 5) = '°';
+    double_to_str(TempMonitor.data[state], second_line + padding);
+    *(second_line + padding + 5) = DEGREES_CHAR;
     *(second_line + padding + 6) = 'C';
+}
+
+void TempUI_::buildSecondLine() {
+    printTemperature(TempMonitor.current_state);
 }
 
 void TempUI_::printKeyState() {
@@ -28,8 +32,15 @@ void TempUI_::printKeyState() {
 }
 
 void TempUI_::printMessage() {
+    if (!messages_disabled) {
+        clear_line(first_line);
+        clear_line(second_line);
+        my_strcpy("EMBEBIDOS  LAB 3", first_line);
+        my_strcpy(" 1er Cuat COM10 ", second_line);
+    }
+
     if(TempMonitor.data[TempMonitor.STATE_CURRENT_TEMP] > HIGH_TEMP_THRES) {
-        //clear_line(first_line);
         my_strcpy(" TEMP ELEVADA! ", first_line);
+        printTemperature(TempMonitor.STATE_CURRENT_TEMP);
     }
 }

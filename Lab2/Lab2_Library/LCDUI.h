@@ -60,19 +60,22 @@ protected:
     static void my_strcpy(const char* source, char* destiny);
     static void clear_line(char* source);
     static void printTime(UI_Time time, char* destiny, int position);
-    void empty_function() {};
+    virtual void empty_function() {};
     static char int_to_char_num(int num);
 
     // Special characters
-    static const byte UP_ARROW_FILLED_CHAR = 0;
+    // Warning! Take care with value 0, may not work
+    static const byte UP_ARROW_FILLED_CHAR = 5;
     static const byte UP_ARROW_BORDERS_CHAR = 1;
     static const byte DOWN_ARROW_FILLED_CHAR = 2;
     static const byte DOWN_ARROW_BORDERS_CHAR = 3;
+    static const byte DEGREES_CHAR = 4;
 
     // Special characters data
     static byte UP_ARROW_FILLED_DATA[8];
     static byte UP_ARROW_BORDERS_DATA[8];
     static byte DOWN_ARROW_FILLED_DATA[8];
     static byte DOWN_ARROW_BORDERS_DATA[8];
+    static byte DEGREES_DATA[8];
 };
 #endif /* LCDUI_H_ */

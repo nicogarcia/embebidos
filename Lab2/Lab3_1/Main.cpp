@@ -9,22 +9,24 @@
 #include "ADCManager.h"
 
 void setup() {
+    // Initialize lcd screen
+    ui.initScreen();
+
     lm35.initialize();
     KeypadDriver.initialize();
 
     ADCManager.insertDriver(lm35, 1);
     ADCManager.insertDriver(KeypadDriver, 0);
 
-    // Initialize lcd screen
-    ui.initScreen();
-
     //Inicializar el pin del led como salida
-    DDRB |= (1<<DDB5);
+    DDRB |= (1 << DDB5);
 
     Serial.begin(115200);
     Serial.print("Lab3_1 Start!!\n");
 
     ui.updateUI();
+
+    SystemClock.attach(Task(2000, ui.disable_message_print));
 }
 
 void loop() {

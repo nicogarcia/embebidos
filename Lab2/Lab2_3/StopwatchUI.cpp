@@ -13,6 +13,18 @@ const char* UI_::MODE_NAMES[MODES_COUNT] = {
     "EMBEBIDOS  LAB 2"
 };
 
+UI_::UI_() {
+    second_line_builders[Stopwatch.STATE_MP] = &UI_::MP_buildSecondLine;
+    second_line_builders[Stopwatch.STATE_MCA] = &UI_::MCA_buildSecondLine;
+    second_line_builders[Stopwatch.STATE_MCD] = &UI_::MCD_buildSecondLine;
+    second_line_builders[Stopwatch.STATE_MVT] = &UI_::MVT_buildSecondLine;
+    second_line_builders[Stopwatch.STATE_MAD] = &UI_::MAD_buildSecondLine;
+    second_line_builders[Stopwatch.STATE_INIT] = &UI_::INIT_buildSecondLine;
+
+    print_message = &UI_::empty_function_2;
+}
+
+
 void UI_::buildFirstLine() {
     my_strcpy(MODE_NAMES[Stopwatch.getCurrentStatePointer()], first_line);
 }
@@ -26,7 +38,7 @@ void UI_::buildSecondLine() {
 /*************************************************/
 
 void UI_::INIT_buildSecondLine() {
-    my_strcpy(" 1er Cuat COM10 ",second_line);
+    my_strcpy(" 1er Cuat COM10 ", second_line);
 }
 
 void UI_::MP_buildSecondLine() {
@@ -44,7 +56,7 @@ void UI_::MCD_buildSecondLine() {
 void UI_::MVT_buildSecondLine() {
     unsigned long int time = Stopwatch.times[Stopwatch.viewing_index];
     if(Stopwatch.times_count == 0)
-        my_strcpy("    Vacio      ",second_line);
+        my_strcpy("    Vacio      ", second_line);
     else
         printTime(ms_to_time(time), second_line, 3);
 }
@@ -54,40 +66,34 @@ void UI_::MAD_buildSecondLine() {
     bool is_100 = Stopwatch.current_bright / 100;
     bool is_0 = Stopwatch.current_bright == 0;
     second_line[pos++] = is_100 ? '1' : ' ';
-    second_line[pos++] = is_0 ? ' ': int_to_char_num((Stopwatch.current_bright % 100) / 10);
+    second_line[pos++] = is_0 ? ' ' : int_to_char_num((Stopwatch.current_bright % 100) / 10);
     second_line[pos++] = int_to_char_num(Stopwatch.current_bright % 10);
     second_line[pos++] = '%';
 }
-
-UI_::UI_() {
-    second_line_builders[Stopwatch.STATE_MP] = &UI_::MP_buildSecondLine;
-    second_line_builders[Stopwatch.STATE_MCA] = &UI_::MCA_buildSecondLine;
-    second_line_builders[Stopwatch.STATE_MCD] = &UI_::MCD_buildSecondLine;
-    second_line_builders[Stopwatch.STATE_MVT] = &UI_::MVT_buildSecondLine;
-    second_line_builders[Stopwatch.STATE_MAD] = &UI_::MAD_buildSecondLine;
-    second_line_builders[Stopwatch.STATE_INIT] = &UI_::INIT_buildSecondLine;
-}
-
 void UI_::print_no_save() {
-    my_strcpy(" NO HAY TIEMPOS ",first_line);
-    my_strcpy("   GUARDADOS    ",second_line);
+    my_strcpy(" NO HAY TIEMPOS ", first_line);
+    my_strcpy("   GUARDADOS    ", second_line);
 }
 
 void UI_::print_saved_time() {
     clear_line(second_line);
-    printTime(ms_to_time(time_saved),second_line,4);
-    my_strcpy("TIEMPO GUARDADO ",first_line);
+    printTime(ms_to_time(time_saved), second_line, 4);
+    my_strcpy("TIEMPO GUARDADO ", first_line);
+}
+
+void no_print() {
+    ui.print_message = &UI_::empty_function_2;
 }
 
 void UI_::show_no_saved_message() {
     print_message = &UI_::print_no_save;
-    SystemClock.attach(Task(1500,disable_message_print));
+    SystemClock.attach(Task(1500, no_print));
 }
 
 void UI_::show_saved_time_message(unsigned long time) {
     print_message = &UI_::print_saved_time;
     time_saved = time;
-    SystemClock.attach(Task(1500,disable_message_print));
+    SystemClock.attach(Task(1500, no_print));
 }
 
 void UI_::printKeyState() {

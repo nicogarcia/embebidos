@@ -9,9 +9,12 @@ public:
     void show_no_saved_message();
 
     void show_saved_time_message(unsigned long save);
-private:
+
     // Message printing function
     void (UI_::*print_message)();
+
+    void empty_function_2() {}
+private:
 
     static const int MODES_COUNT = 6;
     // Store mode indication phrase
@@ -32,6 +35,7 @@ private:
     void printMessage();
     void print_no_save();
     void print_saved_time();
+
 
     // LCDUI Virtual Functions
     void buildFirstLine();

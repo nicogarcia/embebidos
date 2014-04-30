@@ -14,6 +14,7 @@ public:
     // UI Building Functions
     void buildFirstLine();
     void buildSecondLine();
+    void printTemperature(int state);
 };
 extern TempUI_ ui;
 
