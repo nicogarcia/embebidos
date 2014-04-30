@@ -51,6 +51,7 @@ byte LCDUI::DOWN_ARROW_BORDERS_DATA[8] = {
     B00000,
 };
 
+
 // initialize the library with the numbers of the interface pins
 LiquidCrystal LCDUI::screen = LiquidCrystal(8, 9, 4, 5, 6, 7);
 
@@ -178,7 +179,7 @@ void LCDUI::initScreen() {
     LCDUI::screen.createChar(DOWN_ARROW_BORDERS_CHAR, DOWN_ARROW_BORDERS_DATA);
 
     // set up the LCD's number of columns and rows:
-    LCDUI::screen.begin(numCols,numRows);
+    LCDUI::screen.begin(numCols, numRows);
 
     // Set LCD bright, initially to 80%
     analogWrite(10, 80);

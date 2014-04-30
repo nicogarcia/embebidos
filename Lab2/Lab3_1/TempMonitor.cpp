@@ -7,10 +7,10 @@
 TempMonitor_ TempMonitor;
 
 const char* TempMonitor_::state_names[STATES_COUNT] = {
-    "  TEMP ACTUAL",
-    "  TEMP MAXIMA",
-    "  TEMP MINIMA",
-    " TEMP PROMEDIO"
+    "  TEMP ACTUAL  ",
+    "  TEMP MAXIMA  ",
+    "  TEMP MINIMA  ",
+    " TEMP PROMEDIO "
 };
 
 TempMonitor_::TempMonitor_() {

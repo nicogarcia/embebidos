@@ -5,7 +5,7 @@
 class TempUI_ : public LCDUI {
 public:
     // High temperature threshold
-    static const double HIGH_TEMP_THRES = 32;
+    static const double HIGH_TEMP_THRES = 60;
 
     // Printing methods
     void printMessage();

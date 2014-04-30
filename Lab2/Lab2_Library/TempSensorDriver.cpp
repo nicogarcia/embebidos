@@ -1,5 +1,6 @@
 #include "TempSensorDriver.h"
 #include "SystemClock.h"
+#define TEMP_ADC_CONST 0.107421875
 
 TempSensorDriver_ lm35;
 
@@ -7,7 +8,7 @@ TempSensorDriver_ lm35;
 double TempSensorDriver_::temperature;
 
 void TempSensorDriver_::driver_ISR_temp( int value ) {
-    TempSensorDriver_::temperature = (110 * value) / 1024.0;
+    TempSensorDriver_::temperature = TEMP_ADC_CONST * value ;
     PORTB ^= (1 << PB5);
     SystemClock.enqueue(lm35.callback);
 }

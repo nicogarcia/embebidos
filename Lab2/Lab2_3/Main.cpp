@@ -7,12 +7,17 @@
 #include "Stopwatch.h"
 #include "Task.h"
 #include "StopwatchUI.h"
+#include "ADCManager.h"
 
 void setup() {
+    KeypadDriver.initialize();
+
+    ADCManager.insertDriver(KeypadDriver, 0);
+
     ui.initScreen();
 
     //Inicializar el pin del led como salida
-    DDRB |= (1<<DDB5);
+    DDRB |= (1 << DDB5);
 
     Serial.begin(115200);
 
