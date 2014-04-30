@@ -16,6 +16,12 @@ LCDKeypadDriver::LCDKeypadDriver() {
     }
 }
 
+void LCDKeypadDriver::initialize() {
+    time = 1;
+    enabled = true;
+    isr_func = driver_ISR_lcd;
+}
+
 // Registers the callback function for the keydown event of the corresponding key
 void LCDKeypadDriver::registerOnKeyDownCallback(void (*handler)(), int key) {
     callbacks[KEY_DOWN_CALLBACK][key] = handler;

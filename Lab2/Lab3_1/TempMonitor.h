@@ -32,13 +32,19 @@ public:
     static const int HISTORY_LENGHT = 100;
     int history_count;
     double temp_history[HISTORY_LENGHT];
-
     // Method to call when there's a new temperature available
     static void newTemperatureSensed();
 
     static void advance_state();
+    static void regress_state();
 
     static void TempSensorCallback();
+
+    // Key states
+    bool up_key;
+    bool down_key;
+    static void up_key_down();
+    static void down_key_down();
 };
 extern TempMonitor_ TempMonitor;
 

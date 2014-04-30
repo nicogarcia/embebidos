@@ -24,8 +24,15 @@ public:
     //the last time the function was execute
     unsigned long last_execution;
 
+    enum REFERENCES {
+        REF_DEFAULT = 1,
+        REF_INTERNAL_1V1 = 3
+    };
+    // Set analog reference
+    byte analog_reference;
+
     //is null the driver?
-    bool enable;
+    bool enabled;
 
 private:
 

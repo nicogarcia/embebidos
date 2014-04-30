@@ -14,6 +14,7 @@ void TempSensorDriver_::driver_ISR_temp( int value ) {
 
 void TempSensorDriver_::initialize() {
     time = 130;
-    enable = true;
+    enabled = true;
     isr_func = driver_ISR_temp;
+    analog_reference = REF_INTERNAL_1V1;
 }

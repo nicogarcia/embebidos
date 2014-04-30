@@ -150,6 +150,7 @@
     <OutputFileName>Lab2_2</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputType>Executable</OutputType>
+    <PostBuildEvent>%ARDUINO_HOME%\hardware\tools\avr\bin\avrdude.exe -C%ARDUINO_HOME%\hardware\tools\avr\etc\avrdude.conf -patmega328p -carduino -P\\.\COM1 -b115200 -Uflash:w:"$(Name).hex":i</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Main.cpp">

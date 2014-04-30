@@ -9,10 +9,6 @@
 #include "ADCManager.h"
 
 void setup() {
-    // TODO: Test
-//    DIDR0 |= (1 << ADC0D) | (1 << ADC1D);
-    //
-    lm35.callback = TempMonitor.newTemperatureSensed;
     lm35.initialize();
     KeypadDriver.initialize();
 

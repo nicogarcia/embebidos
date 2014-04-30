@@ -2,16 +2,19 @@
 #define UI_H_
 #include "LCDUI.h"
 
-class UI_ : public LCDUI {
+class TempUI_ : public LCDUI {
 public:
+    // High temperature threshold
+    static const double HIGH_TEMP_THRES = 32;
+
     // Printing methods
-    void printMessage() { };
-    void printKeyState() { };
+    void printMessage();
+    void printKeyState();
 
     // UI Building Functions
     void buildFirstLine();
     void buildSecondLine();
 };
-extern UI_ ui;
+extern TempUI_ ui;
 
 #endif /* UI_H_ */

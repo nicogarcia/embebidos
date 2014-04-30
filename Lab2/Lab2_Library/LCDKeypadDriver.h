@@ -18,11 +18,7 @@ class LCDKeypadDriver : public Driver {
 public:
     LCDKeypadDriver();
 
-    void initialize() {
-        time = 1;
-        enable = true;
-        isr_func = driver_ISR_lcd;
-    }
+    void initialize();
 
     // Unimplemented virtual methods, java equivalent of "interface"
     void registerOnKeyDownCallback(void (*handler)(), int key);

@@ -25,7 +25,16 @@ TempMonitor_::TempMonitor_() {
 
     history_count = 0;
 
-    KeypadDriver.registerOnKeyUpCallback(advance_state, LCDKeypadKeys::KEY_SELECT);
+    lm35.callback = TempMonitor.newTemperatureSensed;
+
+    up_key = false;
+    down_key = false;
+
+    KeypadDriver.registerOnKeyUpCallback(advance_state, LCDKeypadKeys::KEY_UP);
+    KeypadDriver.registerOnKeyDownCallback(up_key_down, LCDKeypadKeys::KEY_UP);
+
+    KeypadDriver.registerOnKeyUpCallback(regress_state, LCDKeypadKeys::KEY_DOWN);
+    KeypadDriver.registerOnKeyDownCallback(down_key_down, LCDKeypadKeys::KEY_DOWN);
 }
 
 void TempMonitor_::newTemperatureSensed() {
@@ -35,8 +44,8 @@ void TempMonitor_::newTemperatureSensed() {
     // Update current temperature
     TempMonitor.data[STATE_CURRENT_TEMP] = temperature;
 
-    // TODO: AVG COUNT UPDATE
-    TempMonitor.history_count = max(TempMonitor.history_count + 1, TempMonitor.HISTORY_LENGHT);
+    // Update count, history and next pointer
+    TempMonitor.history_count = min(TempMonitor.history_count + 1, TempMonitor.HISTORY_LENGHT);
     TempMonitor.temp_history[TempMonitor.history_next_available] = temperature;
     TempMonitor.history_next_available = (TempMonitor.history_next_available + 1) % TempMonitor.HISTORY_LENGHT;
 
@@ -56,8 +65,43 @@ void TempMonitor_::newTemperatureSensed() {
 }
 
 void TempMonitor_::advance_state() {
+    // Key indicator disable
+    TempMonitor.up_key = false;
+    TempMonitor.down_key = false;
+
     // Advance state circularly
     TempMonitor.current_state = (TempMonitor.current_state + 1) % TempMonitor.STATES_COUNT;
+
+    // Update UI to see the new state
+    ui.updateUI();
+}
+
+void TempMonitor_::regress_state() {
+    // Key indicator disable
+    TempMonitor.up_key = false;
+    TempMonitor.down_key = false;
+
+    // Advance state circularly
+    int new_state = TempMonitor.current_state == 0 ?
+                    TempMonitor.STATES_COUNT - 1 : TempMonitor.current_state - 1;
+
+    TempMonitor.current_state = new_state;
+
+    // Update UI to see the new state
+    ui.updateUI();
+}
+
+void TempMonitor_::down_key_down() {
+    // Down key indicator enable
+    TempMonitor.down_key = true;
+
+    // Update UI to see the new state
+    ui.updateUI();
+}
+
+void TempMonitor_::up_key_down() {
+    // Down key indicator enable
+    TempMonitor.up_key = true;
 
     // Update UI to see the new state
     ui.updateUI();
