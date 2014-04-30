@@ -23,11 +23,11 @@ ADCManager_::ADCManager_() {
 
 void ADCManager_::insertDriver( Driver driver, uint8_t adc ) {
     if (adc < CANT_ADC) {
-        //disable_adc_interrupt();
         noInterrupts();
+
         drivers[adc] = driver;
         SystemClock.attach(Task(driver.time, vref_setters[adc]));
-        //enable_adc_interrupts();
+
         interrupts();
     }
 }
@@ -37,10 +37,10 @@ void ADCManager_::adc_initializer() {
     // Based on example found in http://maxembedded.com/2011/06/20/the-adc-of-the-avr/
     noInterrupts();
 
-    // AREF = AVcc
-    //1 shift 6 places (01000000) to define the reference for the ADC. In this case 5V
-    //ADLAR bit is set 0 in ADMUX register because we want the high part of the conversion
-    // in ADCH register.
+    //Set the ADC reference and the channel to read
+    //REFS1 = 0 and REFS0 = 0 means externarl reference (AREF)
+    //REFS1 = 0 and REFS0 = 1 means Vcc reference 5V
+    //REFS1 = 1 and REFS0 = 1 means internal reference 1.1V (for Arduino UNO)
     ADMUX = (1 << REFS1) | (1 << REFS0) | (current & 0x07) ;
 
     // ADC Enable and prescaler of 128
@@ -55,22 +55,6 @@ void ADCManager_::adc_initializer() {
     interrupts();
 }
 
-void ADCManager_::disable_adc_interrupt() {
-    noInterrupts();
-
-    ADCSRA &= ~(1 << ADIE);
-
-    interrupts();
-}
-
-void ADCManager_::enable_adc_interrupts() {
-    noInterrupts();
-
-    ADCSRA |= (1 << ADIE);
-
-    interrupts();
-}
-
 volatile int channel_to_read = -1;
 volatile bool adc_running = false;
 
@@ -78,9 +62,10 @@ volatile bool adc_running = false;
 void ADC_vect() {
     if(channel_to_read == -1)
         return;
-
+    //Current driver to 'execute'.
     Driver *current_driver = &ADCManager.drivers[channel_to_read];
 
+    //If its time to execute the current driver the it's enable
     if(current_driver->enabled)
         current_driver->driver_ISR(ADC);
 
@@ -97,6 +82,8 @@ void ADCManager_::vref_setter_common(int channel) {
 
 }
 
+
+//Set the SMCR and the ADCSRA registers to start a conversion in the ADC
 void start_adc_conversion() {
     // Set adc as started
     adc_running = true;

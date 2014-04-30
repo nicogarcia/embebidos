@@ -2,8 +2,6 @@
 #define LCDKEYPAD_DRIVER_H
 
 #include <avr/interrupt.h>
-// Include the keyboard driver interface
-#include "KeyboardDriver.h"
 // Include special properties of the keypad
 #include "LCDKeypadKeys.h"
 #include "Driver.h"

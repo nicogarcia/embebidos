@@ -9,14 +9,14 @@ class Driver {
 public:
     Driver();
 
+    //Function to do after the conversion
     fptr callback;
 
+    //Function to do in the interruption
     void (*isr_func)(int);
 
     //The function to do
     void driver_ISR(int adc_value);
-
-    //virtual void initialize();
 
     //the time between execution of the function
     unsigned long time;
@@ -31,7 +31,7 @@ public:
     // Set analog reference
     byte analog_reference;
 
-    //is null the driver?
+    //If it's true it will execute the next ADC conversion of driver's ADC
     bool enabled;
 
 private:

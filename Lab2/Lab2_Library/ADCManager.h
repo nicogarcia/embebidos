@@ -28,10 +28,6 @@ private:
     friend void ADC_vect(void);
     //driver to execute
     uint8_t current;
-    //disable ADC Interrupts
-    void disable_adc_interrupt();
-    //enable ADC Interrupts
-    void enable_adc_interrupts();
 
     static void (*vref_setters[8])();
     static void vref_setter_common(int);
