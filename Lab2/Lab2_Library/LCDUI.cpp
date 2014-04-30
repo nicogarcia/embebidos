@@ -120,6 +120,27 @@ char LCDUI::int_to_char_num(int num) {
     return num + '0';
 }
 
+// Single decimal precision (Lenght = 4 chars)
+void LCDUI::double_to_str( double num, char* destiny ) {
+    num = num < 0.0 ? -num : num;
+
+    char second_dec = int_to_char_num((int) (num * 100) % 10);
+    char first_dec = int_to_char_num((int) (num * 10) % 10);
+    char first_int = int_to_char_num((int) num % 10);
+    char second_int = int_to_char_num(((int) num / 10) % 10);
+    char third_int = int_to_char_num(((int)num / 100) % 10);
+
+    second_int = second_int == '0' ? ' ' : second_int;
+    third_int = third_int == '0' ? ' ' : third_int;
+
+    destiny[0] = third_int;
+    destiny[1] = second_int;
+    destiny[2] = first_int;
+    destiny[3] = '.';
+    destiny[4] = first_dec;
+    destiny[5] = second_dec;
+}
+
 // Prints time in a string with the format MM:SS.CC in the specified position
 void LCDUI::printTime(UI_Time time, char* destiny, int position) {
     int pos = position;
@@ -167,22 +188,3 @@ void LCDUI::disable_message_print() {
     messages_disabled = true;
 }
 
-// Single decimal precision (Lenght = 4 chars)
-void LCDUI::double_to_str( double num, char* destiny ) {
-
-    char second_dec = int_to_char_num((int) (num * 100) % 10);
-    char first_dec = int_to_char_num((int) (num * 10) % 10);
-    char first_int = int_to_char_num((int) num % 10);
-    char second_int = int_to_char_num(((int) num / 10) % 10);
-    char third_int = int_to_char_num(((int)num / 100) % 10);
-
-    second_int = second_int == '0' ? ' ' : second_int;
-    third_int = third_int == '0' ? ' ' : third_int;
-
-    destiny[0] = third_int;
-    destiny[1] = second_int;
-    destiny[2] = first_int;
-    destiny[3] = '.';
-    destiny[4] = first_dec;
-    destiny[5] = second_dec;
-}

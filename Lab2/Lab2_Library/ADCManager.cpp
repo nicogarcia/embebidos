@@ -41,16 +41,16 @@ void ADCManager_::adc_initializer() {
     //1 shift 6 places (01000000) to define the reference for the ADC. In this case 5V
     //ADLAR bit is set 0 in ADMUX register because we want the high part of the conversion
     // in ADCH register.
-    ADMUX = (1<< REFS1) | (1<<REFS0) | (current & 0x07) ;
+    ADMUX = (1 << REFS1) | (1 << REFS0) | (current & 0x07) ;
 
     // ADC Enable and prescaler of 128
     // 16000000/128 = 125000
     /**
-     * ADEN: ADC Enable set to 1 to enable de ADC
-     * ADIE: ADC Interrupt Enable. Set to 1 to enable de ADC interrupts
-     * ADPS2::0: The prescalar is define by this three bits. 111 means 128.
-     **/
-    ADCSRA = (1<<ADEN)|(1<<ADIE)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
+    * ADEN: ADC Enable set to 1 to enable de ADC
+    * ADIE: ADC Interrupt Enable. Set to 1 to enable de ADC interrupts
+    * ADPS2::0: The prescalar is define by this three bits. 111 means 128.
+    **/
+    ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 
     interrupts();
 }
@@ -66,30 +66,46 @@ void ADCManager_::disable_adc_interrupt() {
 void ADCManager_::enable_adc_interrupts() {
     noInterrupts();
 
-    ADCSRA|=(1<<ADIE);
+    ADCSRA |= (1 << ADIE);
 
     interrupts();
 }
 
-volatile int next_channel = -1;
+volatile int channel_to_read = -1;
 volatile bool adc_running = false;
 
 // Key ISR
 void ADC_vect() {
-    if(next_channel == -1)
+    if(channel_to_read == -1)
         return;
 
-    Driver *current_driver = &ADCManager.drivers[next_channel];
+    Driver *current_driver = &ADCManager.drivers[channel_to_read];
 
     if(current_driver->enabled)
         current_driver->driver_ISR(ADC);
 
-    next_channel = -1;
+    channel_to_read = -1;
+
+    // Set ADC as idle
     adc_running = false;
+
+    // Disable Sleep Mode
+    SMCR = 0;
 }
 
 void ADCManager_::vref_setter_common(int channel) {
 
+}
+
+void start_adc_conversion() {
+    // Set adc as started
+    adc_running = true;
+
+    // Enable ADC Noise Reduction Mode
+    SMCR = (1 << SE) | (1 << SM0);
+
+    // Actually start ADC
+    ADCSRA |= (1 << ADSC);
 }
 
 int count = 0;
@@ -98,11 +114,13 @@ void ADCManager_::vref_setter_ch0() {
     Driver* current_driver = &ADCManager.drivers[channel];
 
     if(!adc_running) {
-        next_channel = channel;
-        ADMUX = (1 << REFS0) | (channel & 0x07);
+        channel_to_read = channel;
 
-        adc_running = true;
-        ADCSRA |= (1 << ADSC);
+        // Set channel and reference
+        ADMUX = (current_driver->analog_reference << REFS0) |  (channel & 0x07);
+
+        // Start adc conversion
+        start_adc_conversion();
         count = 0;
     }
 
@@ -116,14 +134,18 @@ void ADCManager_::vref_setter_ch1() {
     int channel = 1;
     Driver* current_driver = &ADCManager.drivers[channel];
 
+    // Wait for adc to finish
     while(adc_running);
 
-    next_channel = channel;
-    ADMUX = (1 << REFS1) | (1 << REFS0) | (channel & 0x07);
+    // Set channel and reference
+    channel_to_read = channel;
+    ADMUX = (current_driver->analog_reference << REFS0) | (channel & 0x07);
 
-    _delay_ms(8);
-    adc_running = true;
-    ADCSRA |= (1 << ADSC);
+    // Wait for reference to be set
+    _delay_ms(10);
+
+    // Start ADC
+    start_adc_conversion();
 
     SystemClock.attach(Task(current_driver->time, vref_setter_ch1));
 }
