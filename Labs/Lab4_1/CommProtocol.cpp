@@ -5,7 +5,8 @@ CommProtocol_ CommProtocol;
 
 TempMessage CommProtocol_::ReadMessage() {
     int msg_pointer = 0;
-    while(true) {
+    // Is using Serial.available() here ok?
+    while(Serial.available()) {
         byte current_byte;
 
         // Read Byte
