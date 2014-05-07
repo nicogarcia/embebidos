@@ -36,9 +36,3 @@ void loop() {
     // Check and execute if there were events triggered
     SystemClock.checkEvents();
 }
-
-void serialEvent() {
-    while(Serial.available())
-        TempMessage tm = CommProtocol.ReadMessage();
-
-}

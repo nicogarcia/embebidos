@@ -62,7 +62,7 @@ void TempMonitor_::newTemperatureSensed() {
     TempMonitor.data[STATE_AVG_TEMP] = avg_accum / (double) TempMonitor.history_count;
 
     TempMessage msg = {
-        CommProtocol.MODE_ACTUAL,
+        CommProtocol.MODO_TEMP_ACTUAL,
         TempMonitor.data[STATE_CURRENT_TEMP],
         TempMonitor.data[STATE_CURRENT_TEMP],
         TempMonitor.data[STATE_CURRENT_TEMP],

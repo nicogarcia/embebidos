@@ -21,13 +21,13 @@ TempMessage CommProtocol_::ReadMessage() {
         // End token read
         if(current_byte == END_TOKEN) {
             // Additional check, is pointer at the end?
-            if(msg_pointer == MSG_LENGTH - 1)
+            if(msg_pointer == MSG_LENGTH)
                 return ParseMessage();
             continue;
         }
 
         // Number read
-        reading_msg[msg_pointer] = current_byte;
+        reading_msg[msg_pointer++] = current_byte;
     }
 }
 
