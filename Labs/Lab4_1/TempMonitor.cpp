@@ -64,9 +64,9 @@ void TempMonitor_::newTemperatureSensed() {
     TempMessage msg = {
         CommProtocol.MODO_TEMP_ACTUAL,
         TempMonitor.data[STATE_CURRENT_TEMP],
-        TempMonitor.data[STATE_CURRENT_TEMP],
-        TempMonitor.data[STATE_CURRENT_TEMP],
-        TempMonitor.data[STATE_CURRENT_TEMP],
+        TempMonitor.data[STATE_MAX_TEMP],
+        TempMonitor.data[STATE_MIN_TEMP],
+        TempMonitor.data[STATE_AVG_TEMP],
     };
 
     CommProtocol.SendMessage(msg);

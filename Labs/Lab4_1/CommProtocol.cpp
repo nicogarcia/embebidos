@@ -29,6 +29,7 @@ TempMessage CommProtocol_::ReadMessage() {
         // Number read
         reading_msg[msg_pointer++] = current_byte;
     }
+    return TempMessage();
 }
 
 TempMessage CommProtocol_::ParseMessage() {
@@ -39,9 +40,9 @@ TempMessage CommProtocol_::ParseMessage() {
 
     // Make 2-Byte to Double precision conversion
     double temps[4];
-    for(int i = 0; i < 4; i++) {
-        temps[i] = reading_msg[2 * i] - NUMBER_PADDING;
-        temps[i] = (reading_msg[2 * i + 1] - NUMBER_PADDING) / 100.0;
+    for(int i = 1; i < 5; i++) {
+        temps[i - 1] = reading_msg[2 * i] - NUMBER_PADDING;
+        temps[i - 1] += (reading_msg[2 * i + 1] - NUMBER_PADDING) / 100.0;
     }
 
     // Build struct to be returned
@@ -66,9 +67,9 @@ void CommProtocol_::SendMessage(TempMessage message) {
     writing_msg[0] = (byte)(message.mode >> 8);
     writing_msg[1] = (byte)(message.mode);
 
-    for(int i = 0; i < 4; i++) {
-        writing_msg[2 * i] = (byte) temps[i];
-        writing_msg[2 * i + 1] = (byte)((byte)(temps[i] * 100) % 100);
+    for(int i = 1; i < 5; i++) {
+        writing_msg[2 * i] = (byte)(temps[i - 1] + NUMBER_PADDING);
+        writing_msg[2 * i + 1] = (byte)((byte)(temps[i - 1] * 100) % 100 + NUMBER_PADDING);
     }
 
     // Write start token

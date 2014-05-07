@@ -8,6 +8,7 @@
 #include "TempMonitor.h"
 #include "ADCManager.h"
 #include "PriorityQueue.h"
+#include "CommProtocol.h"
 
 void setup() {
     ui.serial_enabled = false;
@@ -32,7 +33,20 @@ void setup() {
 }
 
 void loop() {
-
     // Check and execute if there were events triggered
     SystemClock.checkEvents();
+}
+
+void serialEvent() {
+    if(Serial.available()) {
+        TempMessage tm = CommProtocol.ReadMessage();
+
+        int last_state = TempMonitor.current_state;
+        // Advance state circularly
+        TempMonitor.current_state = tm.mode - 10;
+
+        // Update UI to see the new state, if so
+        if(last_state != TempMonitor.current_state)
+            ui.updateUI();
+    }
 }

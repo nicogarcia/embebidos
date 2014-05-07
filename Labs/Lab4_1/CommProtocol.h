@@ -33,22 +33,22 @@ public:
     void SendMessage(TempMessage message);
 
     // Modes values (from 5 available)
-    static const int MODO_TEMP_ACTUAL = 30;
-    static const int MODO_TEMP_MAXIMA = 40;
-    static const int MODO_TEMP_MINIMA = 50;
-    static const int MODO_TEMP_PROMEDIO = 60;
+    static const int MODO_TEMP_ACTUAL = 10;
+    static const int MODO_TEMP_MAXIMA = 11;
+    static const int MODO_TEMP_MINIMA = 12;
+    static const int MODO_TEMP_PROMEDIO = 13;
 
 private:
     // Message length without tokens
     static const int MSG_LENGTH = 10;
 
     // Start and end tokens
-    static const char START_TOKEN = 2;
-    static const char END_TOKEN = 4;
+    static const char START_TOKEN = 110;
+    static const char END_TOKEN = 120;
 
     // Number padding to map, for ex. 0 => 100, 1 => 101
     // This is to avoid getting false numbers, like 0
-    static const char NUMBER_PADDING = 100;
+    static const char NUMBER_PADDING = 0;
 
     // Temporary arrays to read and write message
     byte reading_msg[MSG_LENGTH];
