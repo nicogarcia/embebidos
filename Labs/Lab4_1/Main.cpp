@@ -38,5 +38,7 @@ void loop() {
 }
 
 void serialEvent() {
+    while(Serial.available())
+        TempMessage tm = CommProtocol.ReadMessage();
 
 }

@@ -32,8 +32,12 @@ public:
 
     void SendMessage(TempMessage message);
 
-    // Modes values (from 5 to 99 available)
-    static const int MODE_ACTUAL = 30;
+    // Modes values (from 5 available)
+    static const int MODO_TEMP_ACTUAL = 30;
+    static const int MODO_TEMP_MAXIMA = 40;
+    static const int MODO_TEMP_MINIMA = 50;
+    static const int MODO_TEMP_PROMEDIO = 60;
+
 private:
     // Message length without tokens
     static const int MSG_LENGTH = 10;
