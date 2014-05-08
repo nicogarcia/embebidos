@@ -6,7 +6,7 @@
 #include "PriorityQueue.h"
 
 // Define C extern for ISR
-extern "C" void TIMER2_COMPA_vect(void) __attribute__ ((signal));
+extern "C" void TIMER2_COMPA_vect(void) __attribute__((signal));
 
 //
 typedef void (*fptr)();
@@ -24,7 +24,7 @@ public:
 
     // Attach callback to pending queue
     void attach(Task task);
-
+    void attach(Task task, unsigned long priority);
     // Enqueue ready callback to execute
     void enqueueReadyFunction(fptr function);
 private:

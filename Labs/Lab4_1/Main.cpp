@@ -25,7 +25,6 @@ void setup() {
     DDRB |= (1 << DDB5);
 
     Serial.begin(115200);
-    Serial.print("Lab3_1 Start!!\n");
 
     ui.updateUI();
 
@@ -38,15 +37,22 @@ void loop() {
 }
 
 void serialEvent() {
-    if(Serial.available()) {
-        TempMessage tm = CommProtocol.ReadMessage();
-
-        int last_state = TempMonitor.current_state;
-        // Advance state circularly
-        TempMonitor.current_state = tm.mode - 10;
-
-        // Update UI to see the new state, if so
-        if(last_state != TempMonitor.current_state)
-            ui.updateUI();
+    // Read trash until START_TOKEN read
+    while(true) {
+        if(Serial.peek() == -1)
+            return;
+        if(Serial.peek() == CommProtocol.START_TOKEN)
+            break;
+        Serial.read();
     }
+
+    TempMessage tm = CommProtocol.ReadMessage();
+
+    int last_state = TempMonitor.current_state;
+
+    TempMonitor.current_state = tm.mode - 10;
+
+    // Update UI to see the new state, if so
+    if(last_state != TempMonitor.current_state)
+        ui.updateUI();
 }

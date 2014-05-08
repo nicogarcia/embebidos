@@ -23,9 +23,9 @@ public:
     // Data accessors
     enum STATE_POINTERS {
         STATE_CURRENT_TEMP = 0,
-        STATE_MAX_TEMP,
-        STATE_MIN_TEMP,
-        STATE_AVG_TEMP
+        STATE_MAX_TEMP = 1,
+        STATE_MIN_TEMP = 2,
+        STATE_AVG_TEMP = 3
     };
 
     // Temperature history

@@ -61,15 +61,16 @@ void TempMonitor_::newTemperatureSensed() {
     // Update average
     TempMonitor.data[STATE_AVG_TEMP] = avg_accum / (double) TempMonitor.history_count;
 
-    TempMessage msg = {
-        CommProtocol.MODO_TEMP_ACTUAL,
-        TempMonitor.data[STATE_CURRENT_TEMP],
-        TempMonitor.data[STATE_MAX_TEMP],
-        TempMonitor.data[STATE_MIN_TEMP],
-        TempMonitor.data[STATE_AVG_TEMP],
-    };
+    TempMessage msg;
+    // FIXME: HARCODED TEN
+    msg.mode = TempMonitor.current_state + 10;
+    msg.temp_actual = TempMonitor.data[STATE_CURRENT_TEMP];
+    msg.temp_maxima = TempMonitor.data[STATE_MAX_TEMP];
+    msg.temp_minima = TempMonitor.data[STATE_MIN_TEMP];
+    msg.temp_promedio = TempMonitor.data[STATE_AVG_TEMP];
 
     CommProtocol.SendMessage(msg);
+    //Serial.println(msg.mode)
 
     // Update UI
     ui.updateUI();

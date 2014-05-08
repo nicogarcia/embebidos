@@ -19,8 +19,8 @@ ADCManager_::ADCManager_() {
     adc_initializer();
 }
 
-void ADCManager_::insertDriver( Driver driver, uint8_t adc ) {
-    if (adc < CANT_ADC) {
+void ADCManager_::insertDriver(Driver driver, uint8_t adc) {
+    if(adc < CANT_ADC) {
         noInterrupts();
 
         drivers[adc] = driver;
@@ -100,17 +100,14 @@ void ADCManager_::vref_setter_ch0() {
         channel_to_read = channel;
 
         // Set channel and reference
-        ADMUX = (current_driver->analog_reference << REFS0) |  (channel & 0x07);
+        ADMUX = (current_driver->analog_reference << REFS0) | (channel & 0x07);
 
         // Start adc conversion
         start_adc_conversion();
         count = 0;
     }
 
-    if(count <= 1) {
-        SystemClock.attach(Task(current_driver->time, vref_setter_ch0));
-        count++;
-    }
+    SystemClock.attach(Task(current_driver->time, vref_setter_ch0));
 }
 
 void ADCManager_::vref_setter_ch1() {

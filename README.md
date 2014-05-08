@@ -9,5 +9,12 @@ Software used:
   	- External tools
   	- Astyle
   	- XFeatures
+  - Processing Eclipse plugin:
+  		**Install instructions**
+  		- Select Update Site - http://proclipsing.googlecode.com/svn/tags/current_releases/proclipsingSite/
+  		- Install core and export
+  		- Set Processing path
+  		- Read differences here: http://processing.org/tutorials/eclipse/
+
 
   Set enviroment variable %ARDUINO_HOME% to arduino installation folder.

@@ -39,17 +39,21 @@ void SystemClock_::init_timer2() {
 void SystemClock_::attach(Task task) {
     //set the start_time (the current time)
     task.tick_time = getMillis() + task.time;
+    attach(task, task.tick_time);
+}
 
-    PendingTasks.enqueue(task, task.tick_time);
+// Attach callback, FIXME: time and tick time could be the same
+void SystemClock_::attach(Task task, unsigned long priority) {
+    PendingTasks.enqueue(task, priority);
 }
 
 // Check if there's a callback to call
 //TODO: if  attach is executing when there are functions to be called,
 void SystemClock_::checkEvents() {
-    while (ReadyTasksQueue.execute()) {}
+    while(ReadyTasksQueue.execute()) {}
 }
 
-void SystemClock_::enqueueReadyFunction( fptr function ) {
+void SystemClock_::enqueueReadyFunction(fptr function) {
     ReadyTasksQueue.enqueue(function);
 }
 

@@ -9,7 +9,7 @@ typedef unsigned long Prio_Type;
 class PriorityQueue {
 public:
     // Queue max size
-    static const unsigned int PQ_MAX_SIZE = 20;
+    static const unsigned int PQ_MAX_SIZE = 30;
 
     PriorityQueue();
 

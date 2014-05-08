@@ -6,7 +6,10 @@ CommProtocol_ CommProtocol;
 TempMessage CommProtocol_::ReadMessage() {
     int msg_pointer = 0;
     // Is using Serial.available() here ok?
-    while(Serial.available()) {
+    while(true) {
+        if(!Serial.available())
+            continue;
+
         byte current_byte;
 
         // Read Byte
@@ -81,4 +84,7 @@ void CommProtocol_::SendMessage(TempMessage message) {
 
     // Write end token
     Serial.write(END_TOKEN);
+
+    // Wait for data to be transmitted
+    Serial.flush();
 }

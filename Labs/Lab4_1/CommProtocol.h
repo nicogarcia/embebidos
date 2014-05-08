@@ -38,17 +38,17 @@ public:
     static const int MODO_TEMP_MINIMA = 12;
     static const int MODO_TEMP_PROMEDIO = 13;
 
-private:
     // Message length without tokens
     static const int MSG_LENGTH = 10;
 
     // Start and end tokens
-    static const char START_TOKEN = 110;
-    static const char END_TOKEN = 120;
+    static const byte START_TOKEN = 110;
+    static const byte END_TOKEN = 120;
 
+private:
     // Number padding to map, for ex. 0 => 100, 1 => 101
     // This is to avoid getting false numbers, like 0
-    static const char NUMBER_PADDING = 0;
+    static const byte NUMBER_PADDING = 0;
 
     // Temporary arrays to read and write message
     byte reading_msg[MSG_LENGTH];
