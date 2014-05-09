@@ -122,7 +122,7 @@
   <avrgcccpp.linker.libraries.Libraries>
     <ListValues>
       <Value>libcoreArduinoUno104.a</Value>
-      <Value>core.a</Value>
+      <Value>libWireLib.a</Value>
     </ListValues>
   </avrgcccpp.linker.libraries.Libraries>
   <avrgcccpp.linker.libraries.LibrarySearchPaths>
@@ -166,10 +166,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="core.a">
+    <None Include="libcoreArduinoUno104.a">
       <SubType>compile</SubType>
     </None>
-    <None Include="libcoreArduinoUno104.a">
+    <None Include="libWireLib.a">
       <SubType>compile</SubType>
     </None>
   </ItemGroup>
