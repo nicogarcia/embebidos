@@ -79,6 +79,13 @@ public class Lab4Processing extends PApplet {
 	Runnable arduino_running_checker = new Runnable() {
 		public void run() {
 			while (true) {
+
+				System.out.println("Waiting for the device...");
+				while (Serial.list().length == 0)
+					;
+				openSerial();
+				
+				// Keep checking if connection
 				try {
 					while (Serial.list().length != 0) {
 						Thread.sleep(100);
@@ -89,17 +96,12 @@ public class Lab4Processing extends PApplet {
 					port.clear();
 					port.stop();
 				}
-
-				System.out.println("Waiting for the device...");
-				while (Serial.list().length == 0)
-					;
-				openSerial();
 			}
 		}
 	};
 
 	public void openSerial() {
-		port = new Serial(this, "COM1", 115200);
+		port = new Serial(this, Serial.list()[0], 115200);
 		port.clear();
 		port.bufferUntil(END_TOKEN);
 	}
@@ -169,10 +171,6 @@ public class Lab4Processing extends PApplet {
 		println(Serial.list());
 
 		// Conectamos nuestro objeto puerto al primer dispositivo de la lista
-		System.out.println("Waiting for the device...");
-		while (Serial.list().length == 0)
-			;
-		openSerial();
 		new Thread(arduino_running_checker).start();
 
 		reading_msg = new byte[MSG_LENGTH];

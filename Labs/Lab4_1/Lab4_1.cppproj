@@ -128,7 +128,7 @@
   <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
   <avrgcccpp.linker.libraries.Libraries>
     <ListValues>
-      <Value>libcoreArduinoUno104.a</Value>
+      <Value>core.a</Value>
     </ListValues>
   </avrgcccpp.linker.libraries.Libraries>
   <avrgcccpp.linker.libraries.LibrarySearchPaths>
@@ -144,6 +144,9 @@
     <PostBuildEvent>%ARDUINO_HOME%\hardware\tools\avr\bin\avrdude.exe -C%ARDUINO_HOME%\hardware\tools\avr\etc\avrdude.conf -patmega328p -carduino -P\\.\COM1 -b115200 -Uflash:w:"$(Name).hex":i</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="core.a">
+      <SubType>compile</SubType>
+    </None>
     <None Include="libcoreArduinoUno104.a">
       <SubType>compile</SubType>
     </None>
