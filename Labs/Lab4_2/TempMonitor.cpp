@@ -40,52 +40,39 @@ TempMonitor_::TempMonitor_() {
 }
 
 void TempMonitor_::newTemperatureSensed() {
-    if(I2CComunication.mode == I2CComunication_::MASTER) {
-        // TODO: Read read temperature
-        double temperature = lm35.temperature;
+    // TODO: Read read temperature
+    double temperature = lm35.temperature;
 
-        // Update current temperature
-        TempMonitor.data[STATE_CURRENT_TEMP] = temperature;
+    // Update current temperature
+    TempMonitor.data[STATE_CURRENT_TEMP] = temperature;
 
-        // Update count, history and next pointer
-        TempMonitor.history_count = min(TempMonitor.history_count + 1, TempMonitor.HISTORY_LENGHT);
-        TempMonitor.temp_history[TempMonitor.history_next_available] = temperature;
-        TempMonitor.history_next_available = (TempMonitor.history_next_available + 1) % TempMonitor.HISTORY_LENGHT;
+    // Update count, history and next pointer
+    TempMonitor.history_count = min(TempMonitor.history_count + 1, TempMonitor.HISTORY_LENGHT);
+    TempMonitor.temp_history[TempMonitor.history_next_available] = temperature;
+    TempMonitor.history_next_available = (TempMonitor.history_next_available + 1) % TempMonitor.HISTORY_LENGHT;
 
-        // Update max and average accum
-        double avg_accum = 0;
-        for(int i = 0; i < TempMonitor.history_count; i++) {
-            TempMonitor.data[STATE_MAX_TEMP] = max(TempMonitor.data[STATE_MAX_TEMP], TempMonitor.temp_history[i]);
-            TempMonitor.data[STATE_MIN_TEMP] = min(TempMonitor.data[STATE_MIN_TEMP], TempMonitor.temp_history[i]);
-            avg_accum += TempMonitor.temp_history[i];
-        }
-
-        // Update average
-        TempMonitor.data[STATE_AVG_TEMP] = avg_accum / (double) TempMonitor.history_count;
-
-        TempMessage msg;
-        // FIXME: HARCODED TEN
-        msg.mode = TempMonitor.current_state + 10;
-        msg.temp_actual = TempMonitor.data[STATE_CURRENT_TEMP];
-        msg.temp_maxima = TempMonitor.data[STATE_MAX_TEMP];
-        msg.temp_minima = TempMonitor.data[STATE_MIN_TEMP];
-        msg.temp_promedio = TempMonitor.data[STATE_AVG_TEMP];
-
-        CommProtocol.SendMessage(msg);
-        if(I2CComunication.comm_ready)
-            I2CComunication.I2CSendMessage(msg);
-
-    } else {
-        //Slave arduino
-        TempMessage msg = I2CComunication.ParseMessage();
-        msg.mode = TempMonitor.current_state + 10;
-        TempMonitor.data[STATE_CURRENT_TEMP] = msg.temp_actual;
-        TempMonitor.data[STATE_MAX_TEMP] = msg.temp_maxima;
-        TempMonitor.data[STATE_MIN_TEMP] = msg.temp_minima;
-        TempMonitor.data[STATE_AVG_TEMP] = msg.temp_promedio;
-
-        CommProtocol.SendMessage(msg);
+    // Update max and average accum
+    double avg_accum = 0;
+    for(int i = 0; i < TempMonitor.history_count; i++) {
+        TempMonitor.data[STATE_MAX_TEMP] = max(TempMonitor.data[STATE_MAX_TEMP], TempMonitor.temp_history[i]);
+        TempMonitor.data[STATE_MIN_TEMP] = min(TempMonitor.data[STATE_MIN_TEMP], TempMonitor.temp_history[i]);
+        avg_accum += TempMonitor.temp_history[i];
     }
+
+    // Update average
+    TempMonitor.data[STATE_AVG_TEMP] = avg_accum / (double) TempMonitor.history_count;
+
+    TempMessage msg;
+    // FIXME: HARCODED TEN
+    msg.mode = TempMonitor.current_state + 10;
+    msg.temp_actual = TempMonitor.data[STATE_CURRENT_TEMP];
+    msg.temp_maxima = TempMonitor.data[STATE_MAX_TEMP];
+    msg.temp_minima = TempMonitor.data[STATE_MIN_TEMP];
+    msg.temp_promedio = TempMonitor.data[STATE_AVG_TEMP];
+
+    CommProtocol.SendMessage(msg);
+    if(I2CComunication.comm_ready)
+        I2CComunication.I2CSendMessage(msg);
 
     // Update UI
     ui.updateUI();

@@ -9,7 +9,7 @@
 
 
 // ISR C++ mapping
-extern "C" void ADC_vect(void) __attribute__ ((signal));
+extern "C" void ADC_vect(void) __attribute__((signal));
 
 class ADCManager_ {
 public:
@@ -18,9 +18,9 @@ public:
     //number of ADC entries
     static const uint8_t CANT_ADC = 6;
     //drivers for each ADC
-    Driver drivers[CANT_ADC];
+    Driver* drivers[CANT_ADC];
     //Insert driver
-    void insertDriver(Driver driver, uint8_t adc);
+    void insertDriver(Driver* driver, uint8_t adc);
 private:
     //the routine to initialize the adc
     void adc_initializer();

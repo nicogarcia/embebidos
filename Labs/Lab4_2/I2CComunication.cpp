@@ -43,7 +43,7 @@ void I2CComunication_::I2CSendMessage(TempMessage message) {
 TempMessage I2CComunication_::I2CReadMessage() {
     int msg_pointer = 0;
 
-    while(1 < Wire.available()) {
+    while(Wire.available()) {
 
         byte current_byte;
 
@@ -68,7 +68,6 @@ TempMessage I2CComunication_::I2CReadMessage() {
         reading_msg[msg_pointer++] = current_byte;
     }
     return TempMessage();
-
 }
 
 TempMessage I2CComunication_::ParseMessage() {

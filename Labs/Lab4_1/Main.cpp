@@ -18,8 +18,8 @@ void setup() {
     lm35.initialize();
     KeypadDriver.initialize();
 
-    ADCManager.insertDriver(lm35, 1);
-    ADCManager.insertDriver(KeypadDriver, 0);
+    ADCManager.insertDriver(&lm35, 1);
+    ADCManager.insertDriver(&KeypadDriver, 0);
 
     //Inicializar el pin del led como salida
     DDRB |= (1 << DDB5);

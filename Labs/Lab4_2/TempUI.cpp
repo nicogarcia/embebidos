@@ -32,8 +32,6 @@ void TempUI_::printKeyState() {
         second_line[UI_KEY_POSITION_LONG] = DOWN_ARROW_BORDERS_CHAR;
 }
 
-
-
 void TempUI_::printMessage() {
     if(!messages_disabled) {
         clear_line(first_line);
@@ -46,11 +44,4 @@ void TempUI_::printMessage() {
         my_strcpy(" TEMP ELEVADA! ", first_line);
         printTemperature(TempMonitor.STATE_CURRENT_TEMP);
     }
-
-    if(i2c_mode == MASTER)
-        my_strcpy("MASTER         ", first_line);
-    else if(i2c_mode == SLAVE)
-        my_strcpy("SLAVE          ", first_line);
-    else
-        my_strcpy("NONE           ", first_line);
 }

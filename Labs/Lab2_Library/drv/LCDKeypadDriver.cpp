@@ -61,7 +61,7 @@ void LCDKeypadDriver::driver_ISR_lcd(int adc_value) {
     // Test if there were changes (keyup or keydown)
     if(last_key != current_key) {
         // Toggle led when there's a change in state (for debugging)
-        PORTB ^= (1 << PB5);
+        //PORTB ^= (1 << PB5);
 
         if(!bouncing) {
             last_key_before_db = last_key;

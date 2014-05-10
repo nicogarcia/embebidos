@@ -12,7 +12,7 @@
 void setup() {
     KeypadDriver.initialize();
 
-    ADCManager.insertDriver(KeypadDriver, 0);
+    ADCManager.insertDriver(&KeypadDriver, 0);
 
     ui.initScreen();
 

@@ -14,17 +14,17 @@ void (*ADCManager_::vref_setters[ADCManager_::CANT_ADC])() = {
 
 ADCManager_::ADCManager_() {
     for(uint8_t i = 0; i < CANT_ADC; i++)
-        drivers[i] = Driver();
+        drivers[i] = NULL;
     current = 0;
     adc_initializer();
 }
 
-void ADCManager_::insertDriver(Driver driver, uint8_t adc) {
+void ADCManager_::insertDriver(Driver* driver, uint8_t adc) {
     if(adc < CANT_ADC) {
         noInterrupts();
 
         drivers[adc] = driver;
-        SystemClock.attach(Task(driver.time, vref_setters[adc]));
+        SystemClock.attach(Task(driver->time, vref_setters[adc]));
 
         interrupts();
     }
@@ -60,7 +60,7 @@ void ADC_vect() {
     if(channel_to_read == -1)
         return;
     //Current driver to 'execute'.
-    Driver *current_driver = &ADCManager.drivers[channel_to_read];
+    Driver *current_driver = ADCManager.drivers[channel_to_read];
 
     //If its time to execute the current driver the it's enable
     if(current_driver->enabled)
@@ -94,7 +94,7 @@ void start_adc_conversion() {
 int count = 0;
 void ADCManager_::vref_setter_ch0() {
     int channel = 0;
-    Driver* current_driver = &ADCManager.drivers[channel];
+    Driver* current_driver = ADCManager.drivers[channel];
 
     if(!adc_running) {
         channel_to_read = channel;
@@ -112,7 +112,7 @@ void ADCManager_::vref_setter_ch0() {
 
 void ADCManager_::vref_setter_ch1() {
     int channel = 1;
-    Driver* current_driver = &ADCManager.drivers[channel];
+    Driver* current_driver = ADCManager.drivers[channel];
 
     // Wait for adc to finish
     while(adc_running);

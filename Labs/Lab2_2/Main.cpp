@@ -38,7 +38,7 @@ void printSelectKeyUp() {
 
 void setup() {
     //Inicializar el pin del led como salida
-    DDRB |= (1<<DDB5);
+    DDRB |= (1 << DDB5);
 
 
     Serial.begin(115200);
@@ -61,7 +61,7 @@ void setup() {
 
 
     KeypadDriver.initialize();
-    ADCManager.insertDriver(KeypadDriver, 0);
+    ADCManager.insertDriver(&KeypadDriver, 0);
 
 }
 
