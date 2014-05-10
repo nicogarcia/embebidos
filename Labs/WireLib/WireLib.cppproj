@@ -27,6 +27,18 @@
     <OverrideVtorValue />
     <BootSegment>2</BootSegment>
     <eraseonlaunchrule>1</eraseonlaunchrule>
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.11.0" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -60,8 +72,14 @@
   <avrgcccpp.linker.libraries.Libraries>
     <ListValues>
       <Value>libm</Value>
+      <Value>libcoreArduinoUno104.a</Value>
     </ListValues>
   </avrgcccpp.linker.libraries.Libraries>
+  <avrgcccpp.linker.libraries.LibrarySearchPaths>
+    <ListValues>
+      <Value>C:\nico\embebidos_workspace\embebidos\Labs\WireLib</Value>
+    </ListValues>
+  </avrgcccpp.linker.libraries.LibrarySearchPaths>
   <avrgcccpp.linker.memorysettings.Comment>&lt;segmentname&gt;=&lt;address&gt;, for example  .boot=0xff</avrgcccpp.linker.memorysettings.Comment>
 </AvrGccCpp>
     </ToolchainSettings>
@@ -115,36 +133,31 @@
   <avrgcccpp.linker.libraries.Libraries>
     <ListValues>
       <Value>libm</Value>
-      <Value>libcore</Value>
+      <Value>libcoreArduinoUno104.a</Value>
     </ListValues>
   </avrgcccpp.linker.libraries.Libraries>
+  <avrgcccpp.linker.libraries.LibrarySearchPaths>
+    <ListValues>
+      <Value>C:\nico\embebidos_workspace\embebidos\Labs\WireLib</Value>
+    </ListValues>
+  </avrgcccpp.linker.libraries.LibrarySearchPaths>
   <avrgcccpp.linker.memorysettings.Comment>&lt;segmentname&gt;=&lt;address&gt;, for example  .boot=0xff</avrgcccpp.linker.memorysettings.Comment>
   <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
 </AvrGccCpp>
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\arduino-1.0.4\libraries\Wire\utility\twi.c">
-      <SubType>compile</SubType>
-      <Link>twi.c</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\arduino-1.0.4\libraries\Wire\utility\twi.h">
-      <SubType>compile</SubType>
-      <Link>twi.h</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\arduino-1.0.4\libraries\Wire\Wire.cpp">
-      <SubType>compile</SubType>
-      <Link>Wire.cpp</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\arduino-1.0.4\libraries\Wire\Wire.h">
-      <SubType>compile</SubType>
-      <Link>Wire.h</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="libcore.a">
+    <None Include="libcoreArduinoUno104.a">
       <SubType>compile</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Wire.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Wire.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

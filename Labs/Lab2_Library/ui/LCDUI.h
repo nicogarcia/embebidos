@@ -16,6 +16,9 @@ public:
     bool lcd_enabled;
 
     //To stop printing message
+    static void enable_message_print();
+
+    //To stop printing message
     static void disable_message_print();
 protected:
     LCDUI();

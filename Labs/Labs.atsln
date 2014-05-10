@@ -20,7 +20,11 @@ Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Lab3_1", "Lab3_1\Lab3_1.cpp
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Lab4_1", "Lab4_1\Lab4_1.cppproj", "{79576941-807E-4D3D-BF59-3263B26618EF}"
 EndProject
+<<<<<<< HEAD
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "WireLib", "WireLib\WireLib.cppproj", "{1228C632-ED75-4919-BA62-2653DAD60628}"
+=======
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Lab4_2", "Lab4_2\Lab4_2.cppproj", "{B89EB282-3184-46FC-8FE9-7499D4C8A890}"
+>>>>>>> e25f67ed41fa562b57b4ff041569648bfffb9c50
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,10 +52,17 @@ Global
 		{79576941-807E-4D3D-BF59-3263B26618EF}.Debug|AVR.Build.0 = Debug|AVR
 		{79576941-807E-4D3D-BF59-3263B26618EF}.Release|AVR.ActiveCfg = Release|AVR
 		{79576941-807E-4D3D-BF59-3263B26618EF}.Release|AVR.Build.0 = Release|AVR
+<<<<<<< HEAD
 		{1228C632-ED75-4919-BA62-2653DAD60628}.Debug|AVR.ActiveCfg = Debug|AVR
 		{1228C632-ED75-4919-BA62-2653DAD60628}.Debug|AVR.Build.0 = Debug|AVR
 		{1228C632-ED75-4919-BA62-2653DAD60628}.Release|AVR.ActiveCfg = Release|AVR
 		{1228C632-ED75-4919-BA62-2653DAD60628}.Release|AVR.Build.0 = Release|AVR
+=======
+		{B89EB282-3184-46FC-8FE9-7499D4C8A890}.Debug|AVR.ActiveCfg = Debug|AVR
+		{B89EB282-3184-46FC-8FE9-7499D4C8A890}.Debug|AVR.Build.0 = Debug|AVR
+		{B89EB282-3184-46FC-8FE9-7499D4C8A890}.Release|AVR.ActiveCfg = Release|AVR
+		{B89EB282-3184-46FC-8FE9-7499D4C8A890}.Release|AVR.Build.0 = Release|AVR
+>>>>>>> e25f67ed41fa562b57b4ff041569648bfffb9c50
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

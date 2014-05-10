@@ -204,3 +204,7 @@ void LCDUI::disable_message_print() {
     messages_disabled = true;
 }
 
+void LCDUI::enable_message_print() {
+    messages_disabled = false;
+}
+
