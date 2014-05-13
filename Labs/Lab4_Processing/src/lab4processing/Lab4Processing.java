@@ -1,26 +1,13 @@
 package lab4processing;
 
+import java.net.UnknownHostException;
+
 import processing.core.PApplet;
 import processing.core.PFont;
 //Importamos la librería serial
 import processing.serial.*;
 
 public class Lab4Processing extends PApplet {
-
-	/**
-	 * Ejemplo de skecth Processing para el desarrollo del Laboratorio Nº4.
-	 * Sistemas Embebidos - 1º Cuatrimestre de 2012
-	 * 
-	 * Este skecth implementa un programa en el host que tiene la capacidad de
-	 * graficar funciones que evolucionan en el tiempo y además permite la
-	 * presentación de datos simples mediante Labels, y la captura de eventos
-	 * del usuario mediante la implementación de botones simples.
-	 * 
-	 * La aplicación divide la ventana en 2 regiones, una de dibujado y otra
-	 * donde se ubican los botones y etiquetas de información.
-	 * 
-	 * Autor: Sebastián Escarza Sistemas Embebidos - 1ºC de 2012.
-	 */
 
 	// Declaramos un objeto tipo Serial
 	Serial port;
@@ -46,7 +33,7 @@ public class Lab4Processing extends PApplet {
 	final int MODO_TEMP_MAXIMA = 11;
 	final int MODO_TEMP_MINIMA = 12;
 	final int MODO_TEMP_PROMEDIO = 13;
-	int ultimo = -1;
+	int last_mode = -1;
 	int mode = MODO_TEMP_ACTUAL;
 	double tempActual;
 	double tempMax;
@@ -76,6 +63,9 @@ public class Lab4Processing extends PApplet {
 	int pgControlViewportWidth = 120;
 	int pgViewportsHeight = 240;
 
+	// Nombre de los modos
+	String[] modes_names = { "Actual", "Máxima", "Mínima", "Promedio" };
+
 	Runnable arduino_running_checker = new Runnable() {
 		public void run() {
 			while (true) {
@@ -84,7 +74,7 @@ public class Lab4Processing extends PApplet {
 				while (Serial.list().length == 0)
 					;
 				openSerial();
-				
+
 				// Keep checking if connection
 				try {
 					while (Serial.list().length != 0) {
@@ -100,14 +90,18 @@ public class Lab4Processing extends PApplet {
 		}
 	};
 
+	GUI_Server s;
 	public void openSerial() {
 		port = new Serial(this, Serial.list()[0], 115200);
 		port.clear();
 		port.bufferUntil(END_TOKEN);
 	}
+	
+	boolean sketchFullScreen() {
+		  return true;
+		}
 
 	public void setup() {
-
 		// Se define el tamaño de la ventana de la aplicación...
 		size(pgFunctionViewportWidth + pgControlViewportWidth,
 				pgViewportsHeight);
@@ -175,6 +169,13 @@ public class Lab4Processing extends PApplet {
 
 		reading_msg = new byte[MSG_LENGTH];
 		writing_msg = new byte[MSG_LENGTH];
+		
+		try {
+			s = new GUI_Server(8887, this);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		s.start();
 	}
 
 	public void draw() {
@@ -198,21 +199,8 @@ public class Lab4Processing extends PApplet {
 		lbl8.writeTemp(tempMin);
 		lbl10.writeTemp(tempProm);
 
-		// Se actualiza el label del modo actual
-		switch (mode) {
-		case MODO_TEMP_ACTUAL:
-			lbl2.caption = "ACT";
-			break;
-		case MODO_TEMP_MAXIMA:
-			lbl2.caption = "MAX";
-			break;
-		case MODO_TEMP_MINIMA:
-			lbl2.caption = "MIN";
-			break;
-		case MODO_TEMP_PROMEDIO:
-			lbl2.caption = "PROM";
-			break;
-		}
+		lbl2.caption = modes_names[mode - 10];
+		
 		// ReadMessage();
 		// Rendering de la interface...
 		background(125);
@@ -239,27 +227,27 @@ public class Lab4Processing extends PApplet {
 		if (mousePressed) {
 			// println("presione boton");
 			if (btnTempActual.pressed()) {
-				ultimo = MODO_TEMP_ACTUAL;
+				last_mode = MODO_TEMP_ACTUAL;
 				btnTempActual.currentcolor = color(0, 100, 0);
 				lbl2.caption = "MA";
 
 				prealert = true;
 			} else if (btnTempProm.pressed()) {
-				ultimo = MODO_TEMP_PROMEDIO;
+				last_mode = MODO_TEMP_PROMEDIO;
 				btnTempProm.currentcolor = color(0, 100, 0);
 				lbl2.caption = "MP";
 				// mode = MODO_TEMP_PROMEDIO;
 				// sendMessage();
 				prealert = true;
 			} else if (btnTempMin.pressed()) {
-				ultimo = MODO_TEMP_MINIMA;
+				last_mode = MODO_TEMP_MINIMA;
 				btnTempMin.currentcolor = color(0, 100, 0);
 				lbl2.caption = "MMIN";
 				// mode = MODO_TEMP_MINIMA;
 				// sendMessage();
 				prealert = true;
 			} else if (btnTempMax.pressed()) {
-				ultimo = MODO_TEMP_MAXIMA;
+				last_mode = MODO_TEMP_MAXIMA;
 				btnTempMax.currentcolor = color(0, 100, 0);
 				lbl2.caption = "MMAX";
 				// mode = MODO_TEMP_MAXIMA;
@@ -291,12 +279,6 @@ public class Lab4Processing extends PApplet {
 		lbl8.display();
 		lbl9.display();
 		lbl10.display();
-		/*
-		 * switch(mode){ case MODE_TEMP_ACTUAL: lbl3.display(); lbl4.display();
-		 * break; case MODE_TEMP_MAX: lbl5.display(); lbl6.display(); break;
-		 * case MODE_TEMP_MIM: lbl7.display(); lbl8.display(); break; case
-		 * MODE_TEMP_PROM: lbl9.display(); lbl4.display(); break;
-		 */
 
 		// if (alert) lbl11.display();
 		if (tempActual > 60)
@@ -309,8 +291,7 @@ public class Lab4Processing extends PApplet {
 
 	void ParseMessage() {
 		// Parse mode
-		mode = (reading_msg[0] << 8) | reading_msg[1]; // println("mode "
-														// +mode);
+		mode = (reading_msg[0] << 8) | reading_msg[1];
 
 		// Make 2-Byte to Double precision conversion
 		double[] temps = new double[4];
@@ -324,8 +305,6 @@ public class Lab4Processing extends PApplet {
 		tempMax = temps[1];
 		tempMin = temps[2];
 		tempProm = temps[3];
-		// println("temp acutal " +temps[0]);
-
 	}
 
 	void ReadMessage() {
@@ -387,7 +366,7 @@ public class Lab4Processing extends PApplet {
 
 		// Write end token
 		port.write(END_TOKEN);
-	}
+ 	}
 
 	public void mouseReleased() {
 		// Si se pulsó algún botón y se completa el click, se hace el toggle
@@ -399,12 +378,17 @@ public class Lab4Processing extends PApplet {
 	}
 
 	public void mouseClicked() {
-		mode = ultimo;
+		mode = last_mode;
 		sendMessage();
 	}
 
 	public void serialEvent(Serial p) {
 		ReadMessage();
+		SendToWebSocket();
+	}
+
+	private void SendToWebSocket() {
+		s.sendTemps(reading_msg);
 	}
 
 }

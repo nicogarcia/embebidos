@@ -28,6 +28,7 @@ typedef struct {
 
 class CommProtocol_ {
 public:
+
     TempMessage ReadMessage();
 
     TempMessage ParseMessage();

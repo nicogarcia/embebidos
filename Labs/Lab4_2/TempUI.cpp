@@ -36,7 +36,7 @@ void TempUI_::printMessage() {
     if(!messages_disabled) {
         clear_line(first_line);
         clear_line(second_line);
-        my_strcpy("EMBEBIDOS  LAB 3", first_line);
+        my_strcpy("EMBEBIDOS  LAB 4", first_line);
         my_strcpy(" 1er Cuat COM10 ", second_line);
     }
 

@@ -40,6 +40,7 @@ void communication(int size) {
 void start_i2c() {
     // Set as slave or master
     Serial.println(TempMonitor.data[TempMonitor_::STATE_CURRENT_TEMP]);
+
     if(TempMonitor.data[TempMonitor_::STATE_CURRENT_TEMP] > 109) {
         I2CComunication.mode = I2CComunication.SLAVE;
         ui.i2c_mode = ui.SLAVE;
@@ -82,6 +83,9 @@ void setup() {
 
     // Start I2C communication
     SystemClock.attach(Task(500, start_i2c));
+
+
+    SystemClock.attach(Task(1000, ui.disable_message_print));
 }
 
 void loop() {

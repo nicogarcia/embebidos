@@ -71,6 +71,7 @@ void TempMonitor_::newTemperatureSensed() {
     msg.temp_promedio = TempMonitor.data[STATE_AVG_TEMP];
 
     CommProtocol.SendMessage(msg);
+
     if(I2CComunication.comm_ready)
         I2CComunication.I2CSendMessage(msg);
 
