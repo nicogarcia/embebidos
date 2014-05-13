@@ -218,3 +218,14 @@ pip-log.txt
 Lab2/Lab2.atsuo
 *.atsuo
 *.atsuo
+Labs/Lab4_Processing/.classpath
+Labs/Lab4_Processing/.classpath
+Labs/Lab4_Processing/Lib/library/serial.jar
+Labs/Lab4_Processing/Lib/library/rxtxSerial.dll
+Labs/Lab4_Processing/Lib/library/RXTXcomm.jar
+Labs/Lab4_Processing/Lib/jna.jar
+Labs/Lab4_Processing/Lib/core.jar
+Labs/Lab4_Processing/Lib/ant.jar
+Labs/Lab4_Processing/Lib/ant-launcher.jar
+Labs/Lab4_Processing/.classpath
+Labs/Lab4_Processing/.classpath
