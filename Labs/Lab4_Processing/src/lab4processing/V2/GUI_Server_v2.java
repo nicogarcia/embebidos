@@ -1,4 +1,4 @@
-package lab4processing;
+package lab4processing.V2;
 
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -10,9 +10,13 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
-public class GUI_Server extends WebSocketServer {
+import processing.serial.Serial;
 
-	Lab4Processing owner_applet;
+public class GUI_Server_v2 extends WebSocketServer {
+
+	final byte SERIAL_SELECTION = 40;
+
+	MainApplet owner_applet;
 
 	/******* Data Simulation ********/
 	byte last_mode = 10;
@@ -46,27 +50,70 @@ public class GUI_Server extends WebSocketServer {
 		this.sendToAll(bytes);
 	}
 
-	public GUI_Server(int port, Lab4Processing lab4Processing)
+	public GUI_Server_v2(int port, MainApplet mainApplet)
 			throws UnknownHostException {
 		super(new InetSocketAddress(port));
-		this.owner_applet = lab4Processing;
+		this.owner_applet = mainApplet;
 	}
 
-	public GUI_Server(InetSocketAddress address) {
+	public GUI_Server_v2(InetSocketAddress address) {
 		super(address);
+	}
+
+	private MainApplet MainAppletI() {
+		return MainApplet.Instance();
 	}
 
 	public void onMessage(WebSocket conn, ByteBuffer message) {
 		byte[] array = message.array();
 
-		owner_applet.mode = ((array[0] << 8) | array[1]);
-		last_mode = array[1];
-		System.out.println(owner_applet.mode);
-		owner_applet.sendMessage();
+		System.out.print("Message Recieved, is Serial Selection? ");
+		if (array[0] >= SERIAL_SELECTION) {
+			System.out.println("Yes!");
+			byte serial_id = (byte) (array[0] - SERIAL_SELECTION);
+			String serial_name = "COM" + serial_id;
+
+			// If Serial port exists and is opened, associate ws with it
+			if (MainApplet.serial_ports.containsKey(serial_name)) {
+				Serial serial = MainApplet.serial_ports.get(serial_name);
+
+				// WS => serial
+				MainApplet.ws_to_serial.put(conn, serial);
+
+				// Serial =>+ WS
+				MainApplet.serial_to_websockets.get(serial).add(conn);
+			} else
+				System.out.println("Requested serial port " + serial_name
+						+ ", not available");
+			return;
+
+		} else
+			System.out.println("No!");
+
+		System.out.println("Is there an assoc serial to this ws? ");
+		MainAppletI();
+		Serial associated_serial = MainApplet.ws_to_serial.get(conn);
+		// If this websocket has a serial associated
+		if (associated_serial != null) {
+			System.out.println("Yes!");
+			owner_applet.sendMessage(associated_serial, array);
+		}
+		System.out.println("No");
 	}
 
 	public void onClose(WebSocket ws, int arg1, String arg2, boolean arg3) {
 		System.out.println("connection closed");
+
+		MainAppletI();
+		// Remove websocket to serial relation
+		Serial s = MainApplet.ws_to_serial.remove(ws);
+
+		MainAppletI();
+		// Remove serial to socket relation
+		if (MainApplet.serial_to_websockets.get(s) != null) {
+			MainAppletI();
+			MainApplet.serial_to_websockets.get(s).remove(ws);
+		}
 	}
 
 	public void onOpen(WebSocket arg0, ClientHandshake arg1) {
@@ -77,6 +124,14 @@ public class GUI_Server extends WebSocketServer {
 		Collection<WebSocket> con = connections();
 		synchronized (con) {
 			for (WebSocket c : con) {
+				c.send(bytes);
+			}
+		}
+	}
+
+	public void sendToAll(byte[] bytes, Collection<WebSocket> web_sockets) {
+		synchronized (web_sockets) {
+			for (WebSocket c : web_sockets) {
 				c.send(bytes);
 			}
 		}

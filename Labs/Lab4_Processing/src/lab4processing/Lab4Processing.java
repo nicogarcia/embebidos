@@ -92,7 +92,7 @@ public class Lab4Processing extends PApplet {
 		}
 	};
 
-	GUI_Server s;
+	GUI_Server ws_server;
 	public void openSerial() {
 		port = new Serial(this, Serial.list()[0], 115200);
 		
@@ -101,10 +101,6 @@ public class Lab4Processing extends PApplet {
 		port.clear();
 		port.bufferUntil(END_TOKEN);
 	}
-	
-	boolean sketchFullScreen() {
-		  return true;
-		}
 
 	public void setup() {
 		// Se define el tamaño de la ventana de la aplicación...
@@ -176,11 +172,11 @@ public class Lab4Processing extends PApplet {
 		writing_msg = new byte[MSG_LENGTH];
 		
 		try {
-			s = new GUI_Server(8887, this);
+			ws_server = new GUI_Server(8887, this);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		s.start();
+		ws_server.start();
 	}
 
 	public void draw() {
@@ -321,13 +317,13 @@ public class Lab4Processing extends PApplet {
 			current_byte = (byte) port.read();
 			if (current_byte == START_TOKEN) {
 				msg_pointer = 0;
-				print("start ");
+//				print("start ");
 				continue;
 			}
 			// End token read
 			if (current_byte == END_TOKEN) {
 				// REMOVED: Additional check, is pointer at the end?
-				println("end");
+//				println("end");
 				ParseMessage();
 				break;
 			}
@@ -340,7 +336,7 @@ public class Lab4Processing extends PApplet {
 			}
 			reading_msg[msg_pointer++] = current_byte;
 
-			print(current_byte + " ");
+//			print(current_byte + " ");
 		}
 	}
 
@@ -393,7 +389,7 @@ public class Lab4Processing extends PApplet {
 	}
 
 	private void SendToWebSocket() {
-		s.sendTemps(reading_msg);
+		ws_server.sendTemps(reading_msg);
 	}
 
 }
