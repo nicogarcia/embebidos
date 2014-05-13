@@ -83,8 +83,10 @@ public class Lab4Processing extends PApplet {
 				} catch (InterruptedException e) {
 				}
 				if (port != null) {
+					String port_name = port.port.getName();
 					port.clear();
 					port.stop();
+					System.out.println("Connection closed with " + port_name);
 				}
 			}
 		}
@@ -93,6 +95,9 @@ public class Lab4Processing extends PApplet {
 	GUI_Server s;
 	public void openSerial() {
 		port = new Serial(this, Serial.list()[0], 115200);
+		
+		System.out.println("Connected on port " + port.port.getName());
+		
 		port.clear();
 		port.bufferUntil(END_TOKEN);
 	}
