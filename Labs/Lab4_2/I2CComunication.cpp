@@ -24,7 +24,7 @@ void I2CComunication_::I2CSendMessage(TempMessage message) {
 
     for(int i = 1; i < 5; i++) {
         writing_msg[2 * i] = (byte)(temps[i - 1] + NUMBER_PADDING);
-        writing_msg[2 * i + 1] = (byte)((byte)(temps[i - 1] * 100) % 100 + NUMBER_PADDING);
+        writing_msg[2 * i + 1] = (byte)((int)(temps[i - 1] * 100) % 100 + NUMBER_PADDING);
     }
 
     // Write start token

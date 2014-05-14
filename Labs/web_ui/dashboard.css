@@ -11,10 +11,12 @@ body {
 /*
  * Global add-ons
  */
-
+.page-header{
+  border-bottom: 1px solid #ddd;  
+}
 .sub-header {
   padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #ddd;
 }
 
 
@@ -42,6 +44,14 @@ body {
   }
 }
 
+/** Connected circle **/
+.circle {
+  background-color: green;
+  border-radius: 5px;
+  height: 10px;
+  width: 10px;
+}
+
 /* Sidebar navigation */
 .nav-sidebar {
   margin-right: -21px; /* 20px padding + 1px border */
@@ -61,6 +71,10 @@ body {
     float:none;
 }
 
+.navbar {
+  margin-bottom: 0;
+}
+
 .title {
   color: #eee;
   font-size: 26px;
@@ -74,7 +88,7 @@ body {
 .full-width {
   width:100%;
 }
-.btn:focus, .btn.active{
+.btn:active:focus, .btn.active:focus {
   outline: none;
 }
 
@@ -83,8 +97,8 @@ body {
  */
 @media (min-width: 768px) {
   .main {
-    padding-right: 40px;
-    padding-left: 40px;
+    padding-right: 20px;
+    padding-left: 20px;
   }
 }
 .main .page-header {
@@ -97,7 +111,7 @@ body {
  */
 
 .placeholders {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   text-align: center;
 }
 .placeholders h4 {

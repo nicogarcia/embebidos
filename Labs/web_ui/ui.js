@@ -18,28 +18,23 @@ $(function(){
 	var mode_names = [ "Actual", "Máxima", "Mínima", "Promedio"];
 
 	// History array
-	var history = [{label: "Actual", data: []}, {label: "Máxima", data: []},
-	{label: "Mínima", data: []}, {label: "Promedio", data: []}];
 	var HISTORY_LENGTH = 461;
+	var history = [ 
+		{label: "Actual", data: new Array(HISTORY_LENGTH)}, //[ [], [] ] }, 
+		{label: "Máxima", data: new Array(HISTORY_LENGTH)}, //[ [], [] ] }, 
+		{label: "Mínima", data: new Array(HISTORY_LENGTH)}, //[ [], [] ] }, 
+		{label: "Promedio", data: new Array(HISTORY_LENGTH)}, //[ [], [] ] }, 
+		];
+		var history_pointer = 0;
 
 	// i2c Mode
 	var i2c_mode;
-	var i2c_mode_names = [ "", "MASTER", "SLAVE"];
+	var i2c_mode_names = [ "", "Maestro", "Esclavo"];
 
 	// Plot object
 	var plot = $.plot("#placeholder", history, {
-		series: {
-			shadowSize: 0	// Drawing is faster without shadows
-		},
-		yaxis: {
-			min: 0
-		},
-		xaxis: {
-			show: false
-		},
-		legend: {
-			position: "nw"
-		}
+		series: { shadowSize: 0 }, yaxis: { min: 0 }, xaxis: { show: false },
+		legend: { position: "nw" }
 	});
 
 	// WebSocket connection object
@@ -80,7 +75,6 @@ $(function(){
 			parseSerialSelection(server_message);
 		else 
 			parseTempMessage(server_message, e.timeStamp);
-
 	}
 
 	function parseSerialSelection(server_message){
@@ -111,10 +105,11 @@ $(function(){
 
 		// Read temperatures on temperatures, and add them to history
 		for(var i = 1; i < 5; ++i){
-			temperatures[i - 1] = server_message[2 * i] + (Math.floor(server_message[2 * i + 1] / 10)) / 10;
+			temperatures[i - 1] = server_message[2 * i] + ((server_message[2 * i + 1])) / 100;
 			$("#" + temp_names[i - 1]).text(parseFloat(temperatures[i - 1]).toFixed(1));
 
-			history[i - 1]["data"].push([timeStamp, temperatures[i - 1]]);
+			history[i - 1]["data"].push([timeStamp, temperatures[i - 1]]);//[history_pointer] = [timeStamp, temperatures[i - 1]]; //
+			//history_pointer = (history_pointer + 1) % HISTORY_LENGTH;
 		}
 
 		// Displace first record when history is full
