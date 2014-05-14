@@ -105,48 +105,61 @@ public class MainApplet extends PApplet {
 
 	public void draw() {
 		try {
-			Set<String> new_ports;
+			Set<String> new_ports_names;
 
 			// Calculate new ports
-			new_ports = new HashSet<String>(Arrays.asList(Serial.list()));
-			
-			// Print all COMs
-			/*for (String s : Serial.list())
-				System.out.print(s + " - ");
-			System.out.println();*/
-			
-			// Remove existing ports
-			new_ports.removeAll(serial_ports.keySet());
+			new_ports_names = new HashSet<String>(Arrays.asList(Serial.list()));
 
-			for (String serial_name : new_ports) {
+			// Print all COMs
+			/*
+			 * for (String s : Serial.list()) System.out.print(s + " - ");
+			 * System.out.println();
+			 */
+
+			// Remove existing ports
+			new_ports_names.removeAll(serial_ports.keySet());
+
+			for (String serial_name : new_ports_names) {
+
 				// Open serial port
 				Serial current = new Serial(this, serial_name, 115200);
 				// Set Serial properties
 				current.clear();
 				current.bufferUntil(END_TOKEN);
-				
+
 				serial_ports.put(serial_name, current);
 				serial_to_websockets.put(current, new HashSet<WebSocket>());
 			}
 
 			// Calculate closed ports
-			@SuppressWarnings("unused")
-			Set<String> current_ports = new HashSet<String>(
+			Set<String> current_ports_names = new HashSet<String>(
 					Arrays.asList(Serial.list()));
 
 			// Remove current ports from registered ports, remainder
 			// ports should be closed
-			/*Collection<Serial> closed_ports = new HashSet<Serial>(
-					serial_ports.values());
-			closed_ports.removeAll(current_ports);
+			Set<String> closed_ports_names = new HashSet<String>(
+					serial_ports.keySet());
 
-			for (Serial serial : closed_ports) {
-				serial_ports.remove(serial.port.getName().toString());
-				serial_to_websockets.remove(serial);
+			closed_ports_names.removeAll(current_ports_names);
+
+			for (String serial_name : closed_ports_names) {
+				Serial serial = serial_ports.remove(serial_name);
+
+				// Detach serial to ws and ws to serial
+				HashSet<WebSocket> to_detach = serial_to_websockets
+						.remove(serial);
+				for (WebSocket webSocket : to_detach) {
+					ws_to_serial.remove(webSocket);
+					System.out.println("Detached " + serial_name);
+				}
+
 				serial.clear();
 				serial.stop();
-				
-			}*/
+			}
+
+			if (new_ports_names.size() + closed_ports_names.size() > 0)
+				// Send currently available ports to all WebSockets
+				gui_server_ws.sendAvailableSerialToAll();
 
 			// Wait before next check
 			Thread.sleep(500);

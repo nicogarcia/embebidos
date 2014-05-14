@@ -2,6 +2,7 @@
 #include "Wire.h"
 
 I2CComunication_ I2CComunication;
+const byte I2CComunication_::ADDRESSES[] = { 1, 3, ADDRESS };
 
 I2CComunication_::I2CComunication_() {
     mode = MASTER;

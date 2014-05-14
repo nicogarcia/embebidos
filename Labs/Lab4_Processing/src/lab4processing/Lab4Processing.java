@@ -292,7 +292,7 @@ public class Lab4Processing extends PApplet {
 
 	void ParseMessage() {
 		// Parse mode
-		mode = (reading_msg[0] << 8) | reading_msg[1];
+		mode = reading_msg[1];
 
 		// Make 2-Byte to Double precision conversion
 		double[] temps = new double[4];
@@ -317,13 +317,13 @@ public class Lab4Processing extends PApplet {
 			current_byte = (byte) port.read();
 			if (current_byte == START_TOKEN) {
 				msg_pointer = 0;
-//				print("start ");
+				print("start ");
 				continue;
 			}
 			// End token read
 			if (current_byte == END_TOKEN) {
 				// REMOVED: Additional check, is pointer at the end?
-//				println("end");
+				println("end");
 				ParseMessage();
 				break;
 			}
@@ -336,7 +336,7 @@ public class Lab4Processing extends PApplet {
 			}
 			reading_msg[msg_pointer++] = current_byte;
 
-//			print(current_byte + " ");
+			print(current_byte + " ");
 		}
 	}
 
@@ -385,7 +385,7 @@ public class Lab4Processing extends PApplet {
 
 	public void serialEvent(Serial p) {
 		ReadMessage();
-		SendToWebSocket();
+		//SendToWebSocket();
 	}
 
 	private void SendToWebSocket() {

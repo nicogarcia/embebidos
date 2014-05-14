@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,6 +11,7 @@
 
   <!-- Bootstrap core CSS -->
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="bootstrap/css/bootstrap-select.min.css" rel="stylesheet">
 
   <!-- Custom styles for this template -->
   <link href="dashboard.css" rel="stylesheet">
@@ -59,7 +60,18 @@
               </center>
             </div>
 
-            <h3 class="page-header">Temperaturas <small>Haga click para cambiar de modo</h3>
+            <h3 class="page-header">
+              Temperaturas 
+              <small>
+                Haga click para cambiar de modo
+              </small>
+              <div style="float:right;">
+                <span id="i2c_mode"></span>
+                <select id="com_select" class="selectpicker">
+                </select>
+              </div>
+            </h3>
+
             <div class="row placeholders">
 
               <div class="col-xs-6 col-sm-3">
@@ -104,6 +116,7 @@
     <script type="text/javascript" src="flot/jquery.min.js"></script>
     <script type="text/javascript" src="flot/jquery.flot.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="bootstrap/js/bootstrap-select.min.js"></script>
 
     <script type="text/javascript" src="ui.js"></script>
   </body>

@@ -39,19 +39,23 @@ void communication(int size) {
 
 void start_i2c() {
     // Set as slave or master
-    Serial.println(TempMonitor.data[TempMonitor_::STATE_CURRENT_TEMP]);
+    //Serial.println(TempMonitor.data[TempMonitor_::STATE_CURRENT_TEMP]);
 
     if(TempMonitor.data[TempMonitor_::STATE_CURRENT_TEMP] > 109) {
         I2CComunication.mode = I2CComunication.SLAVE;
         ui.i2c_mode = ui.SLAVE;
-        Serial.println("I'm SLAVE");
+
+        //Serial.println("I'm SLAVE");
         lm35.enabled = false;
+
         Wire.begin(I2CComunication.ADDRESS);
         Wire.onReceive(communication);
+        // Essential to attend broadcast messages
+        TWAR = (1 << I2CComunication.ADDRESS) | (1 << TWGCE);
     } else {
         I2CComunication.mode = I2CComunication.MASTER;
         ui.i2c_mode = ui.MASTER;
-        Serial.println("I'm MASTER");
+        //Serial.println("I'm MASTER");
         Wire.begin();
     }
 
@@ -83,7 +87,6 @@ void setup() {
 
     // Start I2C communication
     SystemClock.attach(Task(500, start_i2c));
-
 
     SystemClock.attach(Task(1000, ui.disable_message_print));
 }

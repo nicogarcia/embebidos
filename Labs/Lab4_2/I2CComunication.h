@@ -5,12 +5,15 @@
 #include "CommProtocol.h"
 #include "Arduino.h"
 
-
-
 class I2CComunication_ {
 public:
+
     //Constructor
     I2CComunication_();
+
+    // Slaves addresses
+    static const byte ADDRESSES[];
+
     //Device's mode (master or slave)
     uint8_t mode;
 
@@ -22,10 +25,10 @@ public:
 
     bool comm_ready;
 
-    int static const MASTER = 0;
-    int static const SLAVE = 1;
+    int static const MASTER = 1;
+    int static const SLAVE = 2;
 
-    int static const ADDRESS = 9;
+    static const byte ADDRESS = 4;
 
     // Message length without tokens
     static const int MSG_LENGTH = 10;

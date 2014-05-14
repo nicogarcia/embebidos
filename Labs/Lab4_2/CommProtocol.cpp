@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "CommProtocol.h"
+#include "I2CComunication.h"
 
 CommProtocol_ CommProtocol;
 
@@ -39,7 +40,7 @@ TempMessage CommProtocol_::ParseMessage() {
     TempMessage temp_msg;
 
     // Parse mode
-    temp_msg.mode = (reading_msg[0] << 8) | reading_msg[1];
+    temp_msg.mode = reading_msg[1];
 
     // Make 2-Byte to Double precision conversion
     double temps[4];
@@ -67,7 +68,7 @@ void CommProtocol_::SendMessage(TempMessage message) {
     temps[3] = message.temp_promedio;
 
     // Write mode
-    writing_msg[0] = (byte)(message.mode >> 8);
+    writing_msg[0] = (byte)(I2CComunication.mode);
     writing_msg[1] = (byte)(message.mode);
 
     for(int i = 1; i < 5; i++) {
@@ -86,7 +87,7 @@ void CommProtocol_::SendMessage(TempMessage message) {
     Serial.write(END_TOKEN);
 
     // Wait for data to be transmitted
-    Serial.flush();
+    //Serial.flush();
 }
 
 
