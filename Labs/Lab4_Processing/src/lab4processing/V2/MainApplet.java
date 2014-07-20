@@ -104,6 +104,7 @@ public class MainApplet extends PApplet {
 	}
 
 	public void draw() {
+		size(1, 1);
 		try {
 			Set<String> new_ports_names;
 

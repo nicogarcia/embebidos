@@ -13,7 +13,8 @@ Message Format:
 		2 => Maxima
 		3 => Minima
 		4 => Promedio
-	- 2 bytes for mode (FIXME: 1 is enough but with 2 the msg is multiple of int, useless?)
+	- 1 byte for mode
+	- 1 byte for slave-or-master state
 
 ************************************************************************/
 

@@ -280,6 +280,7 @@ public class Lab4Processing extends PApplet {
 		lbl8.display();
 		lbl9.display();
 		lbl10.display();
+		
 
 		// if (alert) lbl11.display();
 		if (tempActual > 60)

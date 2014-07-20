@@ -28,7 +28,7 @@ void communication(int size) {
     TempMonitor.data[TempMonitor.STATE_MIN_TEMP] = msg.temp_minima;
     TempMonitor.data[TempMonitor.STATE_AVG_TEMP] = msg.temp_promedio;
 
-    //ui.updateUI();
+    ui.updateUI();
 
     // Blink on recieve
     PORTB ^= (1 << PB5);
@@ -80,7 +80,7 @@ void setup() {
 
     Serial.begin(115200);
 
-    //ui.updateUI();
+    ui.updateUI();
 
     // TODO: Reset welcome message
     //SystemClock.attach(Task(1, ui.disable_message_print));
@@ -88,7 +88,7 @@ void setup() {
     // Start I2C communication
     SystemClock.attach(Task(500, start_i2c));
 
-    SystemClock.attach(Task(1000, ui.disable_message_print));
+    SystemClock.attach(Task(1, ui.disable_message_print));
 }
 
 void loop() {
@@ -114,6 +114,6 @@ void serialEvent() {
 
     // Update UI to see the new state, if so
     if(last_state != TempMonitor.current_state)
-        ;//ui.updateUI();
+        ui.updateUI();
 }
 
