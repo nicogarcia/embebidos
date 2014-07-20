@@ -20,12 +20,12 @@ $(function(){
 	// History array
 	var HISTORY_LENGTH = 461;
 	var history = [ 
-		{label: "Actual", data: new Array(HISTORY_LENGTH)}, 
-		{label: "Máxima", data: new Array(HISTORY_LENGTH)}, 
-		{label: "Mínima", data: new Array(HISTORY_LENGTH)}, 
-		{label: "Promedio", data: new Array(HISTORY_LENGTH)}, 
+		{label: "Actual", data: new Array(HISTORY_LENGTH)}, //[ [], [] ] }, 
+		{label: "Máxima", data: new Array(HISTORY_LENGTH)}, //[ [], [] ] }, 
+		{label: "Mínima", data: new Array(HISTORY_LENGTH)}, //[ [], [] ] }, 
+		{label: "Promedio", data: new Array(HISTORY_LENGTH)}, //[ [], [] ] }, 
 		];
-	var history_pointer = 0;
+		var history_pointer = 0;
 
 	// i2c Mode
 	var i2c_mode;
@@ -34,17 +34,10 @@ $(function(){
 	// Plot object
 	var plot = $.plot("#placeholder", history, {
 		series: { shadowSize: 0 }, yaxis: { min: 0 }, xaxis: { show: false },
-		legend: { 
-			position: "nw", 
-			labelFormatter: function(label, series) {
-    			// series is the series object for the label
-    			return '<big><strong>' + label + '</big></strong>';
-    		},
-    	}
-    });
+		legend: { position: "nw" }
+	});
 
 	// WebSocket connection object
-	// var connection_string = 'ws://' + window.location.host+ ':8887';
 	var connection_string = 'ws://localhost:8887';
 	var connection;
 
